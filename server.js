@@ -1,0 +1,2502 @@
+const http = require('http');
+const fs = require('fs');
+const path = require('path');
+
+const PORT = 5000;
+
+const booklists = {
+  "computer-science-technology": {
+    code: 66,
+    name: "Computer Science & Technology",
+    regulation: "2022",
+    category: "Engineering",
+    semesters: {
+      1: [
+        { name: "Engineering Drawing", code: "21011" },
+        { name: "Bangla-I", code: "25711" },
+        { name: "English-I", code: "25712" },
+        { name: "Mathematics-I", code: "25911" },
+        { name: "Physics-I", code: "25912" },
+        { name: "Computer Office Application", code: "26611" },
+        { name: "Basic Electricity", code: "26711" }
+      ],
+      2: [
+        { name: "Bangla-II", code: "25721" },
+        { name: "English-II", code: "25722" },
+        { name: "Physical Education & Life Skills Development", code: "25812" },
+        { name: "Mathematics-II", code: "25921" },
+        { name: "Physics-II", code: "25922" },
+        { name: "Python Programming", code: "26621" },
+        { name: "Computer Graphics Design-I", code: "26622" },
+        { name: "Basic Electronics", code: "26811" }
+      ],
+      3: [
+        { name: "Social Science", code: "25811" },
+        { name: "Chemistry", code: "25913" },
+        { name: "Mathematics-III", code: "25931" },
+        { name: "Application Development Using Python", code: "26631" },
+        { name: "Computer Graphics Design-II", code: "26632" },
+        { name: "IT Support Services", code: "26633" },
+        { name: "Digital Electronics-I", code: "26831" }
+      ],
+      4: [
+        { name: "Business Communication", code: "25831" },
+        { name: "Java Programming", code: "26641" },
+        { name: "Data Structure & Algorithm", code: "26642" },
+        { name: "Computer Peripherals & Interfacing", code: "26643" },
+        { name: "Web Design & Development-I", code: "26644" },
+        { name: "Digital Electronics-II", code: "26841" },
+        { name: "Environmental Studies", code: "29041" }
+      ],
+      5: [
+        { name: "Accounting", code: "25841" },
+        { name: "Application Development Using Java", code: "26651" },
+        { name: "Web Design & Development-II", code: "26652" },
+        { name: "Computer Architecture & Microprocessor", code: "26653" },
+        { name: "Data Communication", code: "26654" },
+        { name: "Operating System", code: "26655" },
+        { name: "Project Work-I", code: "26656" }
+      ],
+      6: [
+        { name: "Principles of Marketing", code: "25851" },
+        { name: "Industrial Management", code: "25852" },
+        { name: "Database Management System", code: "26661" },
+        { name: "Computer Networking", code: "26662" },
+        { name: "Sensor & IOT System", code: "26663" },
+        { name: "Microcontroller Based System Design & Development", code: "26664" },
+        { name: "Surveillance Security System", code: "26665" },
+        { name: "Web Development Project", code: "26666" }
+      ],
+      7: [
+        { name: "Innovation & Entrepreneurship", code: "25853" },
+        { name: "Digital Marketing Technique", code: "26671" },
+        { name: "Network Administration & Services", code: "26672" },
+        { name: "Cyber Security & Ethics", code: "26673" },
+        { name: "Apps Development Project", code: "26674" },
+        { name: "Multimedia & Animation", code: "26675" },
+        { name: "Project Work-II", code: "26676" }
+      ],
+      8: [
+        { name: "Industrial Attachment & Project Presentation", code: "29081" }
+      ]
+    }
+  },
+  "electrical-technology": {
+    code: 67,
+    name: "Electrical Technology",
+    regulation: "2022",
+    category: "Engineering",
+    semesters: {
+      1: [
+        { name: "Engineering Drawing", code: "21011" },
+        { name: "Bangla-I", code: "25711" },
+        { name: "English-I", code: "25712" },
+        { name: "Physical Education & Life Skills Development", code: "25812" },
+        { name: "Mathematics-I", code: "25911" },
+        { name: "Physics-I", code: "25912" },
+        { name: "Basic Electricity", code: "26711" },
+        { name: "Electrical Engineering Materials", code: "26712" }
+      ],
+      2: [
+        { name: "Bangla-II", code: "25721" },
+        { name: "English-II", code: "25722" },
+        { name: "Mathematics-II", code: "25921" },
+        { name: "Physics-II", code: "25922" },
+        { name: "Electrical Circuits-I", code: "26721" },
+        { name: "Electrical Engineering Drawing", code: "26722" },
+        { name: "Basic Electronics", code: "26811" }
+      ],
+      3: [
+        { name: "Mathematics-III", code: "25931" },
+        { name: "Chemistry", code: "25913" },
+        { name: "Computer Office Application", code: "26611" },
+        { name: "Electrical Circuits-II", code: "26731" },
+        { name: "Electrical Appliances", code: "26732" },
+        { name: "Industrial Electronics", code: "26833" }
+      ],
+      4: [
+        { name: "Social Science", code: "25811" },
+        { name: "Accounting", code: "25841" },
+        { name: "Electrical Installation, Planning and Estimating", code: "26741" },
+        { name: "DC Machine", code: "26742" },
+        { name: "Electrical Engineering Project-I", code: "26743" },
+        { name: "Digital Electronics", code: "26845" },
+        { name: "Applied Mechanics", code: "27044" }
+      ],
+      5: [
+        { name: "Principles of Marketing", code: "25851" },
+        { name: "Industrial Management", code: "25852" },
+        { name: "Generation of Electrical Power", code: "26751" },
+        { name: "Electrical & Electronic Measurements-I", code: "26752" },
+        { name: "Testing and Maintenance of Electrical Equipments", code: "26753" },
+        { name: "Electrical Engineering Project-II", code: "26754" },
+        { name: "Microprocessor & Microcontroller", code: "26853" }
+      ],
+      6: [
+        { name: "Programming in C", code: "26667" },
+        { name: "AC Machine-I", code: "26761" },
+        { name: "Transmission and Distribution of Electrical Power-I", code: "26762" },
+        { name: "Electrical & Electronic Measurements-II", code: "26763" },
+        { name: "Communication Engineering", code: "26842" },
+        { name: "Environmental Studies", code: "29041" }
+      ],
+      7: [
+        { name: "Business Communication", code: "25831" },
+        { name: "Innovation & Entrepreneurship", code: "25853" },
+        { name: "AC Machine-II", code: "26771" },
+        { name: "Transmission and Distribution of Electrical Power-II", code: "26772" },
+        { name: "Switch Gear and Protection", code: "26773" },
+        { name: "Electrical Engineering Project-III", code: "26774" },
+        { name: "Automation Engineering & PLC", code: "26875" }
+      ],
+      8: [
+        { name: "Industrial Attachment & Project Presentation", code: "26781" }
+      ]
+    }
+  },
+  "civil-technology": {
+    code: 64,
+    name: "Civil Technology",
+    regulation: "2022",
+    category: "Engineering",
+    semesters: {
+      1: [
+        { name: "Engineering Drawing", code: "21011" },
+        { name: "Bangla-I", code: "25711" },
+        { name: "English-I", code: "25712" },
+        { name: "Social Science", code: "25811" },
+        { name: "Mathematics-I", code: "25911" },
+        { name: "Chemistry", code: "25913" },
+        { name: "Civil Engineering Materials", code: "26411" },
+        { name: "Basic Electricity", code: "26711" }
+      ],
+      2: [
+        { name: "Bangla-II", code: "25721" },
+        { name: "English-II", code: "25722" },
+        { name: "Physical Education & Life Skills Development", code: "25812" },
+        { name: "Physics-I", code: "25912" },
+        { name: "Mathematics-II", code: "25921" },
+        { name: "Civil Engineering Drawing", code: "26421" },
+        { name: "Basic Electronics", code: "26811" },
+        { name: "Basic Workshop Practice", code: "27011" }
+      ],
+      3: [
+        { name: "Business Communication", code: "25831" },
+        { name: "Physics-II", code: "25922" },
+        { name: "Mathematics-III", code: "25931" },
+        { name: "Structural Mechanics", code: "26431" },
+        { name: "Surveying-I", code: "26432" },
+        { name: "Construction Process-I", code: "26433" },
+        { name: "Computer Office Application", code: "26611" }
+      ],
+      4: [
+        { name: "Accounting", code: "25841" },
+        { name: "Construction Process-II", code: "26441" },
+        { name: "Estimating & Costing-I", code: "26442" },
+        { name: "Civil CAD-I", code: "26443" },
+        { name: "Surveying-II", code: "26444" },
+        { name: "Geotechnical Engineering", code: "26445" },
+        { name: "Hydrology", code: "26446" },
+        { name: "Wood Workshop Practice", code: "26521" }
+      ],
+      5: [
+        { name: "Industrial Management", code: "25852" },
+        { name: "Foundation Engineering", code: "26451" },
+        { name: "Civil CAD-II", code: "26452" },
+        { name: "Surveying-III", code: "26453" },
+        { name: "Theory of Structure", code: "26454" },
+        { name: "Water Supply Engineering", code: "26455" },
+        { name: "Hydraulics", code: "26456" }
+      ],
+      6: [
+        { name: "Water Resources Engineering", code: "26461" },
+        { name: "Advance Surveying", code: "26462" },
+        { name: "Transportation Engineering-I", code: "26463" },
+        { name: "Design of Structure-I", code: "26464" },
+        { name: "Steel Structures", code: "28863" },
+        { name: "Advanced Construction", code: "28861" },
+        { name: "Environmental Studies", code: "29041" }
+      ],
+      7: [
+        { name: "Principles of Marketing", code: "25851" },
+        { name: "Innovation & Entrepreneurship", code: "25853" },
+        { name: "Civil Engineering Project", code: "26471" },
+        { name: "Sanitary Engineering", code: "26472" },
+        { name: "Transportation Engineering-II", code: "26473" },
+        { name: "Design of Structure-II", code: "26474" },
+        { name: "Estimating & Costing-II", code: "26475" },
+        { name: "Construction Management & Documentation", code: "28871" }
+      ],
+      8: [
+        { name: "Industrial Attachment & Project Presentation", code: "26481" }
+      ]
+    }
+  },
+  "mechanical-technology": {
+    code: 70,
+    name: "Mechanical Technology",
+    regulation: "2022",
+    category: "Engineering",
+    semesters: {
+      1: [
+        { name: "Engineering Drawing", code: "21011" },
+        { name: "Bangla-I", code: "25711" },
+        { name: "English-I", code: "25712" },
+        { name: "Physical Education & Life Skills Development", code: "25812" },
+        { name: "Mathematics-I", code: "25911" },
+        { name: "Physics-I", code: "25912" },
+        { name: "Basic Workshop Practice", code: "27011" },
+        { name: "Machine Shop Practice I", code: "27012" }
+      ],
+      2: [
+        { name: "Bangla-II", code: "25721" },
+        { name: "English-II", code: "25722" },
+        { name: "Mathematics-II", code: "25921" },
+        { name: "Physics-II", code: "25922" },
+        { name: "Basic Electricity", code: "26711" },
+        { name: "Mechanical Engineering Drawing", code: "27021" },
+        { name: "Mechanical Engineering Materials", code: "27022" }
+      ],
+      3: [
+        { name: "Social Science", code: "25811" },
+        { name: "Business Communication", code: "25831" },
+        { name: "Chemistry", code: "25913" },
+        { name: "Mathematics-III", code: "25931" },
+        { name: "Computer Office Application", code: "26611" },
+        { name: "Machine Shop Practice II", code: "27031" },
+        { name: "RAC Cycles & Components", code: "27231" }
+      ],
+      4: [
+        { name: "Accounting", code: "25841" },
+        { name: "Basic Electronics", code: "26811" },
+        { name: "Engineering Mechanics", code: "27041" },
+        { name: "Machine Shop Practice III", code: "27042" },
+        { name: "Metallurgy", code: "27043" },
+        { name: "Engineering Thermodynamics", code: "27131" },
+        { name: "Environmental Studies", code: "29041" }
+      ],
+      5: [
+        { name: "Industrial Management", code: "25852" },
+        { name: "Programming in C", code: "26667" },
+        { name: "Fluid Mechanics & Machineries", code: "27051" },
+        { name: "Mechanical Estimating & Costing", code: "27052" },
+        { name: "Advanced Welding-I", code: "27053" },
+        { name: "Foundry & Pattern Making", code: "27054" },
+        { name: "Manufacturing Process", code: "27055" }
+      ],
+      6: [
+        { name: "Principles of Marketing", code: "25851" },
+        { name: "Automobile Fundamentals", code: "26211" },
+        { name: "Strength of Materials", code: "27061" },
+        { name: "Mechanical Measurement & Metrology", code: "27062" },
+        { name: "CAD & CAM", code: "27063" },
+        { name: "Advanced Welding-II", code: "27064" },
+        { name: "Plant Engineering & Maintenance", code: "27065" }
+      ],
+      7: [
+        { name: "Innovation & Entrepreneurship", code: "25853" },
+        { name: "Design of Machine Elements", code: "27071" },
+        { name: "Tool Design", code: "27072" },
+        { name: "Heat Treatment of Metal", code: "27073" },
+        { name: "Mechanical Engineering Project", code: "27074" },
+        { name: "Production Planning & Control", code: "27075" },
+        { name: "Mechatronics & PLC", code: "29231" }
+      ],
+      8: [
+        { name: "Industrial Attachment & Project Presentation", code: "27081" }
+      ]
+    }
+  },
+  "electronics-technology": {
+    code: 68,
+    name: "Electronics Technology",
+    regulation: "2022",
+    category: "Engineering",
+    semesters: {
+      1: [
+        { name: "Engineering Drawing", code: "21011" },
+        { name: "Bangla-I", code: "25711" },
+        { name: "English-I", code: "25712" },
+        { name: "Mathematics-I", code: "25911" },
+        { name: "Physics-I", code: "25912" },
+        { name: "Basic Electricity", code: "26711" },
+        { name: "Basic Electronics", code: "26811" }
+      ],
+      2: [
+        { name: "Bangla-II", code: "25721" },
+        { name: "English-II", code: "25722" },
+        { name: "Social Science", code: "25811" },
+        { name: "Physical Education & Life Skills Development", code: "25812" },
+        { name: "Mathematics-II", code: "25921" },
+        { name: "Physics-II", code: "25922" },
+        { name: "Electrical Circuits-I", code: "26721" },
+        { name: "Electronic Devices and Circuits", code: "26821" }
+      ],
+      3: [
+        { name: "Chemistry", code: "25913" },
+        { name: "Mathematics-III", code: "25931" },
+        { name: "Computer Office Application", code: "26611" },
+        { name: "Electrical Circuits-II", code: "26731" },
+        { name: "Digital Electronics-I", code: "26831" },
+        { name: "Power Electronics", code: "26832" }
+      ],
+      4: [
+        { name: "Accounting", code: "25841" },
+        { name: "Electrical Installation, Planning and Estimating", code: "26741" },
+        { name: "DC Machine", code: "26742" },
+        { name: "Digital Electronics-II", code: "26841" },
+        { name: "Communication Engineering", code: "26842" },
+        { name: "Networks, Filters and Transmission Lines", code: "26843" },
+        { name: "Electronic Servicing", code: "26844" }
+      ],
+      5: [
+        { name: "Principles of Marketing", code: "25851" },
+        { name: "Industrial Management", code: "25852" },
+        { name: "Programming in C", code: "26667" },
+        { name: "Generation of Electrical Power", code: "26751" },
+        { name: "Electrical & Electronic Measurements-I", code: "26752" },
+        { name: "Television Engineering", code: "26851" },
+        { name: "Electronic Appliances", code: "26852" },
+        { name: "Bio-Medical Instruments", code: "28654" }
+      ],
+      6: [
+        { name: "AC Machine-I", code: "26761" },
+        { name: "Transmission and Distribution of Electrical Power-I", code: "26762" },
+        { name: "Electrical & Electronic Measurements-II", code: "26763" },
+        { name: "TV Studio and Broadcasting", code: "26861" },
+        { name: "Microcontroller and Embedded System", code: "26862" },
+        { name: "PCB Design and Prototyping", code: "26863" },
+        { name: "Environmental Studies", code: "29041" }
+      ],
+      7: [
+        { name: "Business Communication", code: "25831" },
+        { name: "Innovation & Entrepreneurship", code: "25853" },
+        { name: "AC Machine-II", code: "26771" },
+        { name: "Transmission and Distribution of Electrical Power-II", code: "26772" },
+        { name: "Microwave Radar and Navigation Aids", code: "26871" },
+        { name: "Industrial Automation and PLC", code: "26872" },
+        { name: "Control System and Robotics", code: "26873" },
+        { name: "Electronic Project", code: "26874" }
+      ],
+      8: [
+        { name: "Industrial Attachment & Project Presentation", code: "26881" }
+      ]
+    }
+  },
+  "power-technology": {
+    code: 71,
+    name: "Power Technology",
+    regulation: "2022",
+    category: "Engineering",
+    semesters: {
+      1: [
+        { name: "Engineering Drawing", code: "21011" },
+        { name: "Bangla-I", code: "25711" },
+        { name: "English-I", code: "25712" },
+        { name: "Mathematics-I", code: "25911" },
+        { name: "Physics-I", code: "25912" },
+        { name: "Basic Electricity", code: "26711" },
+        { name: "Basic Electronics", code: "26811" }
+      ],
+      2: [
+        { name: "Bangla-II", code: "25721" },
+        { name: "English-II", code: "25722" },
+        { name: "Physical Education & Life Skills Development", code: "25812" },
+        { name: "Mathematics-II", code: "25921" },
+        { name: "Physics-II", code: "25922" },
+        { name: "Electrical Circuits-I", code: "26721" },
+        { name: "Electrical Engineering Drawing", code: "26722" }
+      ],
+      3: [
+        { name: "Social Science", code: "25811" },
+        { name: "Chemistry", code: "25913" },
+        { name: "Mathematics-III", code: "25931" },
+        { name: "Computer Office Application", code: "26611" },
+        { name: "Electrical Circuits-II", code: "26731" },
+        { name: "Industrial Electronics", code: "26833" }
+      ],
+      4: [
+        { name: "Business Communication", code: "25831" },
+        { name: "Accounting", code: "25841" },
+        { name: "Electrical Installation, Planning and Estimating", code: "26741" },
+        { name: "DC Machine", code: "26742" },
+        { name: "Digital Electronics", code: "26845" },
+        { name: "Engineering Thermodynamics", code: "27131" }
+      ],
+      5: [
+        { name: "Principles of Marketing", code: "25851" },
+        { name: "Industrial Management", code: "25852" },
+        { name: "Generation of Electrical Power", code: "26751" },
+        { name: "Electrical & Electronic Measurements-I", code: "26752" },
+        { name: "Microprocessor & Microcontroller", code: "26853" },
+        { name: "Steam Boiler & Prime Mover", code: "27151" }
+      ],
+      6: [
+        { name: "Programming in C", code: "26667" },
+        { name: "AC Machine-I", code: "26761" },
+        { name: "Transmission and Distribution of Electrical Power-I", code: "26762" },
+        { name: "Communication Engineering", code: "26842" },
+        { name: "Gas Turbine & Combined Cycle Power Plant", code: "27161" },
+        { name: "Environmental Studies", code: "29041" }
+      ],
+      7: [
+        { name: "Innovation & Entrepreneurship", code: "25853" },
+        { name: "AC Machine-II", code: "26771" },
+        { name: "Transmission and Distribution of Electrical Power-II", code: "26772" },
+        { name: "Switch Gear and Protection", code: "26773" },
+        { name: "Automation Engineering & PLC", code: "26875" },
+        { name: "Nuclear & Renewable Energy", code: "27171" },
+        { name: "Power Plant Engineering Project", code: "27172" }
+      ],
+      8: [
+        { name: "Industrial Attachment & Project Presentation", code: "27181" }
+      ]
+    }
+  },
+  "rac-technology": {
+    code: 72,
+    name: "RAC Technology",
+    regulation: "2022",
+    category: "Engineering",
+    semesters: {
+      1: [
+        { name: "Engineering Drawing", code: "21011" },
+        { name: "Bangla-I", code: "25711" },
+        { name: "English-I", code: "25712" },
+        { name: "Mathematics-I", code: "25911" },
+        { name: "Physics-I", code: "25912" },
+        { name: "Basic Workshop Practice", code: "27011" },
+        { name: "RAC Workshop Practice-I", code: "27211" }
+      ],
+      2: [
+        { name: "Bangla-II", code: "25721" },
+        { name: "English-II", code: "25722" },
+        { name: "Physical Education & Life Skills Development", code: "25812" },
+        { name: "Mathematics-II", code: "25921" },
+        { name: "Physics-II", code: "25922" },
+        { name: "Basic Electricity", code: "26711" },
+        { name: "RAC Engineering Drawing", code: "27221" }
+      ],
+      3: [
+        { name: "Social Science", code: "25811" },
+        { name: "Chemistry", code: "25913" },
+        { name: "Mathematics-III", code: "25931" },
+        { name: "Computer Office Application", code: "26611" },
+        { name: "RAC Cycles & Components", code: "27231" },
+        { name: "RAC Workshop Practice-II", code: "27232" }
+      ],
+      4: [
+        { name: "Business Communication", code: "25831" },
+        { name: "Accounting", code: "25841" },
+        { name: "Basic Electronics", code: "26811" },
+        { name: "Engineering Thermodynamics", code: "27131" },
+        { name: "Refrigeration System-I", code: "27241" },
+        { name: "RAC Workshop Practice-III", code: "27242" }
+      ],
+      5: [
+        { name: "Principles of Marketing", code: "25851" },
+        { name: "Industrial Management", code: "25852" },
+        { name: "RAC Electrical Circuits & Controls", code: "27251" },
+        { name: "Refrigeration System-II", code: "27252" },
+        { name: "Air Conditioning System-I", code: "27253" },
+        { name: "RAC Workshop Practice-IV", code: "27254" }
+      ],
+      6: [
+        { name: "Programming in C", code: "26667" },
+        { name: "Air Conditioning System-II", code: "27261" },
+        { name: "Cold Storage & Ice Plant", code: "27262" },
+        { name: "RAC Estimating & Costing", code: "27263" },
+        { name: "RAC Workshop Practice-V", code: "27264" },
+        { name: "Environmental Studies", code: "29041" }
+      ],
+      7: [
+        { name: "Innovation & Entrepreneurship", code: "25853" },
+        { name: "Industrial Refrigeration", code: "27271" },
+        { name: "Central Air Conditioning", code: "27272" },
+        { name: "RAC Troubleshooting & Maintenance", code: "27273" },
+        { name: "RAC Engineering Project", code: "27274" },
+        { name: "Automation & PLC", code: "29232" }
+      ],
+      8: [
+        { name: "Industrial Attachment & Project Presentation", code: "27281" }
+      ]
+    }
+  },
+  "automobile-technology": {
+    code: 62,
+    name: "Automobile Technology",
+    regulation: "2022",
+    category: "Engineering",
+    semesters: {
+      1: [
+        { name: "Engineering Drawing", code: "21011" },
+        { name: "Bangla-I", code: "25711" },
+        { name: "English-I", code: "25712" },
+        { name: "Mathematics-I", code: "25911" },
+        { name: "Physics-I", code: "25912" },
+        { name: "Basic Workshop Practice", code: "27011" },
+        { name: "Automobile Workshop Practice-I", code: "26211" }
+      ],
+      2: [
+        { name: "Bangla-II", code: "25721" },
+        { name: "English-II", code: "25722" },
+        { name: "Physical Education & Life Skills Development", code: "25812" },
+        { name: "Mathematics-II", code: "25921" },
+        { name: "Physics-II", code: "25922" },
+        { name: "Basic Electricity", code: "26711" },
+        { name: "Automobile Engineering Drawing", code: "26221" }
+      ],
+      3: [
+        { name: "Social Science", code: "25811" },
+        { name: "Chemistry", code: "25913" },
+        { name: "Mathematics-III", code: "25931" },
+        { name: "Computer Office Application", code: "26611" },
+        { name: "Automobile Materials & Workshop Practice-II", code: "26231" },
+        { name: "Engine Fundamentals", code: "26232" }
+      ],
+      4: [
+        { name: "Business Communication", code: "25831" },
+        { name: "Accounting", code: "25841" },
+        { name: "Basic Electronics", code: "26811" },
+        { name: "Engineering Thermodynamics", code: "27131" },
+        { name: "Automobile Engine-I", code: "26241" },
+        { name: "Automobile Workshop Practice-III", code: "26242" }
+      ],
+      5: [
+        { name: "Principles of Marketing", code: "25851" },
+        { name: "Industrial Management", code: "25852" },
+        { name: "Automobile Engine-II", code: "26251" },
+        { name: "Automobile Chassis-I", code: "26252" },
+        { name: "Automobile Electrical System-I", code: "26253" },
+        { name: "Automobile Workshop Practice-IV", code: "26254" }
+      ],
+      6: [
+        { name: "Programming in C", code: "26667" },
+        { name: "Automobile Chassis-II", code: "26261" },
+        { name: "Automobile Electrical System-II", code: "26262" },
+        { name: "Vehicle Body & Painting", code: "26263" },
+        { name: "Automobile Workshop Practice-V", code: "26264" },
+        { name: "Environmental Studies", code: "29041" }
+      ],
+      7: [
+        { name: "Innovation & Entrepreneurship", code: "25853" },
+        { name: "Automobile Maintenance & Troubleshooting", code: "26271" },
+        { name: "Vehicle Inspection & Testing", code: "26272" },
+        { name: "Hybrid & Electric Vehicle", code: "26273" },
+        { name: "Automobile Engineering Project", code: "26274" },
+        { name: "Automation & PLC", code: "29232" }
+      ],
+      8: [
+        { name: "Industrial Attachment & Project Presentation", code: "26281" }
+      ]
+    }
+  },
+  "architecture-technology": {
+    code: 61,
+    name: "Architecture Technology",
+    regulation: "2022",
+    category: "Engineering",
+    semesters: {
+      1: [
+        { name: "Engineering Drawing", code: "21011" },
+        { name: "Bangla-I", code: "25711" },
+        { name: "English-I", code: "25712" },
+        { name: "Physical Education & Life Skills Development", code: "25812" },
+        { name: "Mathematics-I", code: "25911" },
+        { name: "Chemistry", code: "25913" },
+        { name: "Creativity and Concept Development", code: "26111" },
+        { name: "Basic Electricity", code: "26711" }
+      ],
+      2: [
+        { name: "Bangla-II", code: "25721" },
+        { name: "English-II", code: "25722" },
+        { name: "Physics-I", code: "25912" },
+        { name: "Mathematics-II", code: "25921" },
+        { name: "Architectural Design-I", code: "26121" },
+        { name: "Civil Engineering Materials", code: "26411" },
+        { name: "Computer Office Application", code: "26611" }
+      ],
+      3: [
+        { name: "Physics-II", code: "25922" },
+        { name: "Mathematics-III", code: "25931" },
+        { name: "Architectural Design-II", code: "26131" },
+        { name: "Architectural Graphics", code: "26132" },
+        { name: "Working Drawing-I", code: "26133" },
+        { name: "Climatology", code: "26134" },
+        { name: "Computer Aided Drawing-I", code: "26135" }
+      ],
+      4: [
+        { name: "Social Science", code: "25811" },
+        { name: "Accounting", code: "25841" },
+        { name: "Architectural Design-III", code: "26141" },
+        { name: "History of Architecture-I", code: "26142" },
+        { name: "Working Drawing-II", code: "26143" },
+        { name: "Computer Aided Drawing-II", code: "26144" },
+        { name: "Basic Construction Process", code: "26434" },
+        { name: "Basic Estimating & Costing", code: "26447" }
+      ],
+      5: [
+        { name: "Business Communication", code: "25831" },
+        { name: "Architectural Design-IV", code: "26151" },
+        { name: "History of Architecture-II", code: "26152" },
+        { name: "Model Making", code: "26153" },
+        { name: "Presentation and Visual Technique", code: "26154" },
+        { name: "Structural Mechanics", code: "26431" },
+        { name: "Water Supply and Sanitary Engineering", code: "26457" }
+      ],
+      6: [
+        { name: "Industrial Management", code: "25852" },
+        { name: "Architectural Design-V", code: "26161" },
+        { name: "Computer Rendering and Animation-I", code: "26162" },
+        { name: "Landscape Design", code: "26163" },
+        { name: "Modern Architecture", code: "26164" },
+        { name: "Interior Design-I", code: "26165" },
+        { name: "Design of Structure-I", code: "26464" },
+        { name: "Environmental Studies", code: "29041" }
+      ],
+      7: [
+        { name: "Principles of Marketing", code: "25851" },
+        { name: "Innovation & Entrepreneurship", code: "25853" },
+        { name: "Architectural Project", code: "26171" },
+        { name: "Computer Rendering and Animation-II", code: "26172" },
+        { name: "Urban Planning", code: "26173" },
+        { name: "Professional Practice", code: "26174" },
+        { name: "Interior Design-II", code: "26175" },
+        { name: "Fundamental Surveying", code: "26435" }
+      ],
+      8: [
+        { name: "Industrial Attachment & Project Presentation", code: "26181" }
+      ]
+    }
+  },
+  "food-technology": {
+    code: 69,
+    name: "Food Technology",
+    regulation: "2022",
+    category: "Engineering",
+    semesters: {
+      1: [
+        { name: "Engineering Drawing", code: "21011" },
+        { name: "Bangla-I", code: "25711" },
+        { name: "English-I", code: "25712" },
+        { name: "Physical Education & Life Skills Development", code: "25812" },
+        { name: "Mathematics-I", code: "25911" },
+        { name: "Chemistry", code: "25913" },
+        { name: "Food Engineering Fundamentals", code: "26911" },
+        { name: "Food Safety & Hygiene Management", code: "26912" }
+      ],
+      2: [
+        { name: "Bangla-II", code: "25721" },
+        { name: "English-II", code: "25722" },
+        { name: "Physics-I", code: "25912" },
+        { name: "Mathematics-II", code: "25921" },
+        { name: "Basic Electricity", code: "26711" },
+        { name: "Food Science & Nutrition", code: "26921" },
+        { name: "Food Plant Layout & Design", code: "26922" },
+        { name: "Basic Workshop Practice", code: "27011" }
+      ],
+      3: [
+        { name: "Social Science", code: "25811" },
+        { name: "Physics-II", code: "25922" },
+        { name: "Mathematics-III", code: "25931" },
+        { name: "Computer Office Application", code: "26611" },
+        { name: "Basic Electronics", code: "26811" },
+        { name: "Catering Management", code: "26931" },
+        { name: "Food Industrial Chemistry", code: "26932" }
+      ],
+      4: [
+        { name: "Business Communication", code: "25831" },
+        { name: "Accounting", code: "25841" },
+        { name: "Food Microbiology-I", code: "26941" },
+        { name: "Food Preservation-I", code: "26942" },
+        { name: "Food Chemistry", code: "26943" },
+        { name: "Food Packaging", code: "26944" },
+        { name: "Dairy Products", code: "26945" },
+        { name: "Engineering Mechanics", code: "27041" }
+      ],
+      5: [
+        { name: "Industrial Management", code: "25852" },
+        { name: "Refrigeration & Cold Storage", code: "26355" },
+        { name: "Food Microbiology-II", code: "26951" },
+        { name: "Food Preservation-II", code: "26952" },
+        { name: "Food Biotechnology", code: "26953" },
+        { name: "Food & Beverage Products", code: "26954" },
+        { name: "Food Industrial Instrumentation & Process Control", code: "26955" }
+      ],
+      6: [
+        { name: "Industrial Stoichiometry & Thermodynamics", code: "26364" },
+        { name: "Instrumental Methods of Analysis", code: "26365" },
+        { name: "Food Engineering Operation-I", code: "26961" },
+        { name: "Food Process Industries-I", code: "26962" },
+        { name: "Bakery Products", code: "26963" },
+        { name: "Food Adulteration & Toxicology", code: "26964" },
+        { name: "Environmental Studies", code: "29041" }
+      ],
+      7: [
+        { name: "Principles of Marketing", code: "25851" },
+        { name: "Innovation & Entrepreneurship", code: "25853" },
+        { name: "Food Engineering Operation-II", code: "26971" },
+        { name: "Food Process Industries-II", code: "26972" },
+        { name: "Food Quality Control & Assurance", code: "26973" },
+        { name: "Confectionery Products", code: "26974" },
+        { name: "Food Analysis", code: "26975" },
+        { name: "Food Engineering Project", code: "26976" }
+      ],
+      8: [
+        { name: "Industrial Attachment & Project Presentation", code: "26981" }
+      ]
+    }
+  },
+  "surveying-technology": {
+    code: 78,
+    name: "Surveying Technology",
+    regulation: "2022",
+    category: "Engineering",
+    semesters: {
+      1: [
+        { name: "Engineering Drawing", code: "21011" },
+        { name: "Bangla-I", code: "25711" },
+        { name: "English-I", code: "25712" },
+        { name: "Social Science", code: "25811" },
+        { name: "Mathematics-I", code: "25911" },
+        { name: "Physics-I", code: "25912" },
+        { name: "Civil Engineering Materials", code: "26411" },
+        { name: "Basic Electricity", code: "26711" }
+      ],
+      2: [
+        { name: "Bangla-II", code: "25721" },
+        { name: "English-II", code: "25722" },
+        { name: "Physical Education & Life Skills Development", code: "25812" },
+        { name: "Mathematics-II", code: "25921" },
+        { name: "Physics-II", code: "25922" },
+        { name: "Computer Office Application", code: "26611" },
+        { name: "Basic Electronics", code: "26811" },
+        { name: "Basic Surveying", code: "27821" }
+      ],
+      3: [
+        { name: "Chemistry", code: "25913" },
+        { name: "Mathematics-III", code: "25931" },
+        { name: "Biology-I", code: "25915" },
+        { name: "Basic Construction Process", code: "26434" },
+        { name: "Leveling", code: "27831" },
+        { name: "Survey CAD", code: "27832" },
+        { name: "Introduction of Geography", code: "27833" },
+        { name: "Geodetic Surveying", code: "27834" }
+      ],
+      4: [
+        { name: "Business Communication", code: "25831" },
+        { name: "Structural Mechanics", code: "26431" },
+        { name: "Basic Estimating & Costing", code: "26447" },
+        { name: "Aerial Photography and Photogrammetry", code: "27841" },
+        { name: "Fundamentals of GIS", code: "27842" },
+        { name: "Advanced Surveying-I", code: "27843" },
+        { name: "Digital Cartography", code: "27844" }
+      ],
+      5: [
+        { name: "Accounting", code: "25841" },
+        { name: "Theory of Structure", code: "26454" },
+        { name: "Python Programming", code: "26621" },
+        { name: "Advanced GIS", code: "27851" },
+        { name: "Hydraulics & Hydrology", code: "27852" },
+        { name: "Advanced Surveying-II", code: "27853" },
+        { name: "Land Laws of Bangladesh", code: "27854" },
+        { name: "Environmental Studies", code: "29041" }
+      ],
+      6: [
+        { name: "Industrial Management", code: "25852" },
+        { name: "Transportation Engineering-I", code: "26463" },
+        { name: "Design of Structure-I", code: "26464" },
+        { name: "Principles of Topographic Survey", code: "27861" },
+        { name: "Application of Python Programming", code: "27862" },
+        { name: "Hydrographic Surveying", code: "27863" },
+        { name: "Survey Project-I", code: "27864" },
+        { name: "Preparation and Maintenance of Land Records", code: "27865" }
+      ],
+      7: [
+        { name: "Principles of Marketing", code: "25851" },
+        { name: "Innovation & Entrepreneurship", code: "25853" },
+        { name: "Transportation Engineering-II", code: "26473" },
+        { name: "Design of Structure-II", code: "26474" },
+        { name: "Mine Surveying", code: "27871" },
+        { name: "Survey Project-II", code: "27872" },
+        { name: "Remote Sensing", code: "27873" },
+        { name: "Construction Management & Documentation", code: "28871" }
+      ],
+      8: [
+        { name: "Industrial Attachment & Project Presentation", code: "67881" }
+      ]
+    }
+  },
+  "chemical-technology": {
+    code: 63,
+    name: "Chemical Technology",
+    regulation: "2022",
+    category: "Engineering",
+    semesters: {
+      1: [
+        { name: "Engineering Drawing", code: "21011" },
+        { name: "Bangla-I", code: "25711" },
+        { name: "English-I", code: "25712" },
+        { name: "Physical Education & Life Skills Development", code: "25812" },
+        { name: "Mathematics-I", code: "25911" },
+        { name: "Chemistry", code: "25913" },
+        { name: "Chemical Engineering Fundamentals", code: "26311" },
+        { name: "Safety in Chemical Industry", code: "26312" }
+      ],
+      2: [
+        { name: "Bangla-II", code: "25721" },
+        { name: "English-II", code: "25722" },
+        { name: "Physics-I", code: "25912" },
+        { name: "Mathematics-II", code: "25921" },
+        { name: "Basic Stoichiometry", code: "26321" },
+        { name: "Chemical Engineering Drawing", code: "26322" },
+        { name: "Basic Electronics", code: "26811" },
+        { name: "Basic Workshop Practice", code: "27011" }
+      ],
+      3: [
+        { name: "Social Science", code: "25811" },
+        { name: "Physics-II", code: "25922" },
+        { name: "Mathematics-III", code: "25931" },
+        { name: "Chemical Engineering Operation-I", code: "26331" },
+        { name: "Industrial Chemistry", code: "26332" },
+        { name: "Chemical Engineering Materials", code: "26333" },
+        { name: "Basic Electricity", code: "26711" }
+      ],
+      4: [
+        { name: "Business Communication", code: "25831" },
+        { name: "Accounting", code: "25841" },
+        { name: "Chemical Engineering Operation-II", code: "26341" },
+        { name: "Chemical Process Industries-I", code: "26342" },
+        { name: "Oil, Fats & Waxes", code: "26343" },
+        { name: "Analytical Chemistry", code: "26344" },
+        { name: "Computer Office Application", code: "26611" },
+        { name: "Engineering Mechanics", code: "27041" }
+      ],
+      5: [
+        { name: "Industrial Management", code: "25852" },
+        { name: "Chemical Engineering Operation-III", code: "26351" },
+        { name: "Chemical Process Industries-II", code: "26352" },
+        { name: "Water Treatment Technology", code: "26353" },
+        { name: "Industrial Instrumentation & Process Control", code: "26354" },
+        { name: "Refrigeration & Cold Storage", code: "26355" },
+        { name: "Industrial Production Engineering", code: "26356" }
+      ],
+      6: [
+        { name: "Principles of Marketing", code: "25851" },
+        { name: "Chemical Engineering Operation-IV", code: "26361" },
+        { name: "Chemical Process Industries-III", code: "26362" },
+        { name: "Petroleum & Petrochemicals", code: "26363" },
+        { name: "Industrial Stoichiometry & Thermodynamics", code: "26364" },
+        { name: "Instrumental Methods of Analysis", code: "26365" },
+        { name: "Jute & Textile Technology", code: "26366" }
+      ],
+      7: [
+        { name: "Innovation & Entrepreneurship", code: "25853" },
+        { name: "Chemical Engineering Operation-V", code: "26371" },
+        { name: "Chemical Process Industries-IV", code: "26372" },
+        { name: "Natural Gas & Fertilizer", code: "26373" },
+        { name: "Plastic & Polymer Technology", code: "26374" },
+        { name: "Corrosion Technology", code: "26375" },
+        { name: "Chemical Engineering Project", code: "26376" },
+        { name: "Environmental Studies", code: "29041" }
+      ],
+      8: [
+        { name: "Industrial Attachment & Project Presentation", code: "26381" }
+      ]
+    }
+  },
+  "ceramic-technology": {
+    code: 76,
+    name: "Ceramic Technology",
+    regulation: "2022",
+    category: "Engineering",
+    semesters: {
+      1: [
+        { name: "Engineering Drawing", code: "21011" },
+        { name: "Bangla-I", code: "25711" },
+        { name: "English-I", code: "25712" },
+        { name: "Physical Education & Life Skills Development", code: "25812" },
+        { name: "Mathematics-I", code: "25911" },
+        { name: "Chemistry", code: "25913" },
+        { name: "Basic Electricity", code: "26711" },
+        { name: "Geological Engineering", code: "27611" }
+      ],
+      2: [
+        { name: "Bangla-II", code: "25721" },
+        { name: "English-II", code: "25722" },
+        { name: "Physics-I", code: "25912" },
+        { name: "Mathematics-II", code: "25921" },
+        { name: "Basic Electronics", code: "26811" },
+        { name: "Basic Workshop Practice", code: "27011" },
+        { name: "Ceramic Model Making", code: "27621" },
+        { name: "Ceramic Engineering Materials-I", code: "27622" }
+      ],
+      3: [
+        { name: "Business Communication", code: "25831" },
+        { name: "Physics-II", code: "25922" },
+        { name: "Mathematics-III", code: "25931" },
+        { name: "Computer Office Application", code: "26611" },
+        { name: "Model and Mould Fabrication-I", code: "27631" },
+        { name: "Ceramic Engineering Materials-II", code: "27632" },
+        { name: "Ceramic Plants and Equipment", code: "27633" }
+      ],
+      4: [
+        { name: "Social Science", code: "25811" },
+        { name: "Accounting", code: "25841" },
+        { name: "Ceramic Test and Calculation", code: "27641" },
+        { name: "Ceramic Engineering Chemistry", code: "27642" },
+        { name: "Refractories", code: "27643" },
+        { name: "Model and Mould Fabrication-II", code: "27644" },
+        { name: "Ceramic Body Preparation", code: "27645" }
+      ],
+      5: [
+        { name: "Industrial Management", code: "25852" },
+        { name: "White Wares", code: "27651" },
+        { name: "Heavy Clay Products", code: "27652" },
+        { name: "Ceramic Instrumentation and Process Control", code: "27653" },
+        { name: "Ceramic Fabrication and Drying", code: "27654" },
+        { name: "Cement Manufacturing", code: "27655" },
+        { name: "Fuels and Combustion", code: "27656" }
+      ],
+      6: [
+        { name: "Tiles and Sanitary Wares", code: "27661" },
+        { name: "Drier, Kiln and Furnace", code: "27662" },
+        { name: "Ceramic Quality Control", code: "27663" },
+        { name: "Ceramic Glaze and Colour", code: "27664" },
+        { name: "Ceramic Decoration and Printing", code: "27665" },
+        { name: "Graphics Design", code: "27745" },
+        { name: "Environmental Studies", code: "29041" }
+      ],
+      7: [
+        { name: "Principles of Marketing", code: "25851" },
+        { name: "Innovation & Entrepreneurship", code: "25853" },
+        { name: "CAD & CAM", code: "27063" },
+        { name: "Ceramic Engineering Project", code: "27671" },
+        { name: "Advanced Ceramic Products", code: "27672" },
+        { name: "Kiln, Furnace Design and Construction", code: "27673" },
+        { name: "Glass Manufacturing", code: "27674" }
+      ],
+      8: [
+        { name: "Industrial Attachment & Project Presentation", code: "27681" }
+      ]
+    }
+  },
+  "glass-technology": {
+    code: 77,
+    name: "Glass Technology",
+    regulation: "2022",
+    category: "Engineering",
+    semesters: {
+      1: [
+        { name: "Engineering Drawing", code: "21011" },
+        { name: "Bangla-I", code: "25711" },
+        { name: "English-I", code: "25712" },
+        { name: "Business Communication", code: "25831" },
+        { name: "Mathematics-I", code: "25911" },
+        { name: "Chemistry", code: "25913" },
+        { name: "Basic Electricity", code: "26711" },
+        { name: "Glass Engineering Materials-I", code: "27711" }
+      ],
+      2: [
+        { name: "Bangla-II", code: "25721" },
+        { name: "English-II", code: "25722" },
+        { name: "Social Science", code: "25811" },
+        { name: "Physical Education & Life Skills Development", code: "25812" },
+        { name: "Physics-I", code: "25912" },
+        { name: "Mathematics-II", code: "25921" },
+        { name: "Basic Electronics", code: "26811" },
+        { name: "Glass Engineering Materials-II", code: "27721" }
+      ],
+      3: [
+        { name: "Physics-II", code: "25922" },
+        { name: "Mathematics-III", code: "25931" },
+        { name: "Computer Office Application", code: "26611" },
+        { name: "Basic Workshop Practice", code: "27011" },
+        { name: "Glass Mould & Die-I", code: "27731" },
+        { name: "Glass Plants & Equipment", code: "27732" },
+        { name: "Preparation of Glass Raw Materials", code: "27733" }
+      ],
+      4: [
+        { name: "Accounting", code: "25841" },
+        { name: "Automation Engineering & PLC", code: "26875" },
+        { name: "Glass Engineering Chemistry", code: "27741" },
+        { name: "Glass Mould & Die-II", code: "27742" },
+        { name: "Glass Fabrication-I", code: "27743" },
+        { name: "Fuels and Combustion", code: "27744" },
+        { name: "Graphics Design", code: "27745" }
+      ],
+      5: [
+        { name: "Principles of Marketing", code: "25851" },
+        { name: "Industrial Management", code: "25852" },
+        { name: "CAD & CAM", code: "27063" },
+        { name: "Cement Manufacturing", code: "27655" },
+        { name: "Glass Melting Furnace", code: "27751" },
+        { name: "Glass Fabrication-II", code: "27752" },
+        { name: "Ceramic Manufacturing-I", code: "27753" }
+      ],
+      6: [
+        { name: "Refractories", code: "27643" },
+        { name: "Ceramic Manufacturing-II", code: "27761" },
+        { name: "Heat Transfer & Thermodynamics", code: "27762" },
+        { name: "Glass Quality Control-I", code: "27763" },
+        { name: "Glass Products-I", code: "27764" },
+        { name: "Glass Industrial Safety", code: "27765" },
+        { name: "Environmental Studies", code: "29041" }
+      ],
+      7: [
+        { name: "Innovation & Entrepreneurship", code: "25853" },
+        { name: "Glass Products-II", code: "27771" },
+        { name: "Glass Quality Control-II", code: "27772" },
+        { name: "Glass Decoration & Printing", code: "27773" },
+        { name: "Glass House Instrumentation", code: "27774" },
+        { name: "Furnace Design & Construction", code: "27775" },
+        { name: "Glass Engineering Project", code: "27776" }
+      ],
+      8: [
+        { name: "Industrial Attachment & Project Presentation", code: "27781" }
+      ]
+    }
+  },
+  "environmental-technology": {
+    code: 90,
+    name: "Environmental Technology",
+    regulation: "2022",
+    category: "Engineering",
+    semesters: {
+      1: [
+        { name: "Engineering Drawing", code: "21011" },
+        { name: "Bangla-I", code: "25711" },
+        { name: "English-I", code: "25712" },
+        { name: "Social Science", code: "25811" },
+        { name: "Mathematics-I", code: "25911" },
+        { name: "Chemistry", code: "25913" },
+        { name: "Basic Electricity", code: "26711" },
+        { name: "Basic Environmental Engineering", code: "29011" }
+      ],
+      2: [
+        { name: "Bangla-II", code: "25721" },
+        { name: "English-II", code: "25722" },
+        { name: "Physics-I", code: "25912" },
+        { name: "Mathematics-II", code: "25921" },
+        { name: "Civil Engineering Drawing", code: "26421" },
+        { name: "Computer Office Application", code: "26611" },
+        { name: "Basic Electronics", code: "26811" }
+      ],
+      3: [
+        { name: "Physics-II", code: "25922" },
+        { name: "Mathematics-III", code: "25931" },
+        { name: "Civil Engineering Materials", code: "26411" },
+        { name: "Surveying-I", code: "26432" },
+        { name: "Construction Process-I", code: "26433" },
+        { name: "Basic Workshop Practice", code: "27011" },
+        { name: "Water Quality Engineering", code: "29031" }
+      ],
+      4: [
+        { name: "Physical Education & Life Skills Development", code: "25812" },
+        { name: "Business Communication", code: "25831" },
+        { name: "Structural Mechanics", code: "26431" },
+        { name: "Estimating & Costing-I", code: "26442" },
+        { name: "Civil CAD-I", code: "26443" },
+        { name: "Surveying-II", code: "26444" },
+        { name: "Geotechnical Engineering", code: "26445" },
+        { name: "Environmental Chemistry", code: "29042" }
+      ],
+      5: [
+        { name: "Accounting", code: "25841" },
+        { name: "Construction Process-II", code: "26441" },
+        { name: "Theory of Structure", code: "26454" },
+        { name: "Water Supply Engineering", code: "26455" },
+        { name: "Water and Waste Water Engineering", code: "29051" },
+        { name: "Environmental Microbiology", code: "29052" },
+        { name: "Geographic Information System (GIS) & Remote Sensing", code: "29053" }
+      ],
+      6: [
+        { name: "Industrial Management", code: "25852" },
+        { name: "Hydraulics", code: "26456" },
+        { name: "Transportation Engineering-I", code: "26463" },
+        { name: "Design of Structure-I", code: "26464" },
+        { name: "Environmental Impact Assessment (EIA) & Environmental Regulation", code: "29061" },
+        { name: "Air Pollution & Control Engineering", code: "29062" },
+        { name: "Environmental Auditing", code: "29063" },
+        { name: "Health, Safety & Environment", code: "29064" }
+      ],
+      7: [
+        { name: "Principles of Marketing", code: "25851" },
+        { name: "Innovation & Entrepreneurship", code: "25853" },
+        { name: "Sanitary Engineering", code: "26472" },
+        { name: "Estimating & Costing-II", code: "26475" },
+        { name: "Construction Management & Documentation", code: "28871" },
+        { name: "Energy & Environmental Engineering", code: "29071" },
+        { name: "Solid and Hazardous Waste Engineering", code: "29072" },
+        { name: "Climate Change and Adaptability", code: "29073" }
+      ],
+      8: [
+        { name: "Industrial Attachment & Project Presentation", code: "29081" }
+      ]
+    }
+  },
+  "mechatronics-technology": {
+    code: 92,
+    name: "Mechatronics Technology",
+    regulation: "2022",
+    category: "Engineering",
+    semesters: {
+      1: [
+        { name: "Engineering Drawing", code: "21011" },
+        { name: "Bangla-I", code: "25711" },
+        { name: "English-I", code: "25712" },
+        { name: "Physical Education & Life Skills Development", code: "25812" },
+        { name: "Mathematics-I", code: "25911" },
+        { name: "Physics-I", code: "25912" },
+        { name: "Basic Electricity", code: "26711" },
+        { name: "Basic Workshop Practice", code: "27011" }
+      ],
+      2: [
+        { name: "Bangla-II", code: "25721" },
+        { name: "English-II", code: "25722" },
+        { name: "Mathematics-II", code: "25921" },
+        { name: "Physics-II", code: "25922" },
+        { name: "Basic Electronics", code: "26811" },
+        { name: "Machine Shop Practice I", code: "27012" },
+        { name: "Mechanical Engineering Drawing", code: "27021" }
+      ],
+      3: [
+        { name: "Social Science", code: "25811" },
+        { name: "Business Communication", code: "25831" },
+        { name: "Chemistry", code: "25913" },
+        { name: "Mathematics-III", code: "25931" },
+        { name: "Computer Office Application", code: "26611" },
+        { name: "Electronic Devices and Circuits", code: "26821" },
+        { name: "Mechanical Engineering Materials", code: "27022" },
+        { name: "Basic Mechatronics", code: "29232" }
+      ],
+      4: [
+        { name: "Accounting", code: "25841" },
+        { name: "Programming in C", code: "26667" },
+        { name: "Machine Shop Practice II", code: "27031" },
+        { name: "Engineering Mechanics", code: "27041" },
+        { name: "Engineering Thermodynamics", code: "27131" },
+        { name: "Environmental Studies", code: "29041" },
+        { name: "Electrical Circuits & Machine", code: "29241" }
+      ],
+      5: [
+        { name: "Principles of Marketing", code: "25851" },
+        { name: "Industrial Management", code: "25852" },
+        { name: "Digital Electronics", code: "26845" },
+        { name: "Fluid Mechanics & Machineries", code: "27051" },
+        { name: "Manufacturing Process", code: "27055" },
+        { name: "Fundamental of Hybrid & Electric Vehicle", code: "27151" },
+        { name: "Power Plant Engineering", code: "27152" },
+        { name: "Programmable Logic Controller", code: "29251" }
+      ],
+      6: [
+        { name: "Industrial Electronics", code: "26833" },
+        { name: "Strength of Materials", code: "27061" },
+        { name: "Mechanical Measurement & Metrology", code: "27062" },
+        { name: "CAD & CAM", code: "27063" },
+        { name: "Microprocessor & Microcontroller Applications", code: "29261" },
+        { name: "Instrumentation & Control System", code: "29262" }
+      ],
+      7: [
+        { name: "Innovation & Entrepreneurship", code: "25853" },
+        { name: "Design of Machine Elements", code: "27071" },
+        { name: "Production Planning & Control", code: "27075" },
+        { name: "Mechatronics Engineering Project", code: "29271" },
+        { name: "Industrial Automation System Design", code: "29272" },
+        { name: "Networks & Communications", code: "29273" },
+        { name: "Robotics, Manufacture & Process Engineering", code: "29274" }
+      ],
+      8: [
+        { name: "Industrial Attachment & Project Presentation", code: "27081" }
+      ]
+    }
+  },
+  "telecommunication-technology": {
+    code: 94,
+    name: "Telecommunication Technology",
+    regulation: "2022",
+    category: "Engineering",
+    semesters: {
+      1: [
+        { name: "Engineering Drawing", code: "21011" },
+        { name: "Bangla-I", code: "25711" },
+        { name: "English-I", code: "25712" },
+        { name: "Mathematics-I", code: "25911" },
+        { name: "Physics-I", code: "25912" },
+        { name: "Basic Electricity", code: "26711" },
+        { name: "Basics of Telecommunication", code: "29411" }
+      ],
+      2: [
+        { name: "Bangla-II", code: "25721" },
+        { name: "English-II", code: "25722" },
+        { name: "Social Science", code: "25811" },
+        { name: "Physical Education & Life Skills Development", code: "25812" },
+        { name: "Mathematics-II", code: "25921" },
+        { name: "Physics-II", code: "25922" },
+        { name: "Electrical Circuits-I", code: "26721" },
+        { name: "Basic Electronics", code: "26811" }
+      ],
+      3: [
+        { name: "Chemistry", code: "25913" },
+        { name: "Mathematics-III", code: "25931" },
+        { name: "Computer Office Application", code: "26611" },
+        { name: "Electrical Circuits-II", code: "26731" },
+        { name: "Electronic Devices and Circuits", code: "26821" },
+        { name: "Telecom Workshop and Outside Plant", code: "29431" }
+      ],
+      4: [
+        { name: "Accounting", code: "25841" },
+        { name: "Programming in C", code: "26667" },
+        { name: "Electrical Installation, Planning and Estimating", code: "26741" },
+        { name: "Digital Electronics", code: "26845" },
+        { name: "Radio and TV Engineering", code: "29441" },
+        { name: "IT Support and IoT Basics", code: "29442" },
+        { name: "Data Communications and Networking", code: "29443" }
+      ],
+      5: [
+        { name: "Principles of Marketing", code: "25851" },
+        { name: "Industrial Management", code: "25852" },
+        { name: "DC Machine", code: "26742" },
+        { name: "Generation of Electrical Power", code: "26751" },
+        { name: "Electrical & Electronic Measurements-I", code: "26752" },
+        { name: "Microprocessor & Microcontroller", code: "26853" },
+        { name: "Multimedia and Webpage Design", code: "29451" }
+      ],
+      6: [
+        { name: "AC Machine-I", code: "26761" },
+        { name: "Electrical & Electronic Measurements-II", code: "26763" },
+        { name: "Transmission and Distribution of Electrical Power", code: "26764" },
+        { name: "Environmental Studies", code: "29041" },
+        { name: "Wireless and Mobile Communication", code: "29462" },
+        { name: "Signals and Switching System", code: "29463" }
+      ],
+      7: [
+        { name: "Business Communication", code: "25831" },
+        { name: "Innovation & Entrepreneurship", code: "25853" },
+        { name: "AC Machine-II", code: "26771" },
+        { name: "Switch Gear and Protection", code: "26773" },
+        { name: "Microwave Engineering and Antennas", code: "29471" },
+        { name: "Optical Fiber Communication", code: "29472" },
+        { name: "Satellite Communication and RADAR", code: "29473" }
+      ],
+      8: [
+        { name: "Industrial Attachment & Project Presentation", code: "26781" }
+      ]
+    }
+  },
+  "construction-technology": {
+    code: 88,
+    name: "Construction Technology",
+    regulation: "2022",
+    category: "Engineering",
+    semesters: {
+      1: [
+        { name: "Engineering Drawing", code: "21011" },
+        { name: "Bangla-I", code: "25711" },
+        { name: "English-I", code: "25712" },
+        { name: "Social Science", code: "25811" },
+        { name: "Mathematics-I", code: "25911" },
+        { name: "Chemistry", code: "25913" },
+        { name: "Civil Engineering Materials", code: "26411" },
+        { name: "Basic Electricity", code: "26711" }
+      ],
+      2: [
+        { name: "Bangla-II", code: "25721" },
+        { name: "English-II", code: "25722" },
+        { name: "Physical Education & Life Skills Development", code: "25812" },
+        { name: "Physics-I", code: "25912" },
+        { name: "Mathematics-II", code: "25921" },
+        { name: "Civil Engineering Drawing", code: "26421" },
+        { name: "Basic Electronics", code: "26811" },
+        { name: "Basic Workshop Practice", code: "27011" }
+      ],
+      3: [
+        { name: "Business Communication", code: "25831" },
+        { name: "Physics-II", code: "25922" },
+        { name: "Mathematics-III", code: "25931" },
+        { name: "Structural Mechanics", code: "26431" },
+        { name: "Surveying-I", code: "26432" },
+        { name: "Computer Office Application", code: "26611" },
+        { name: "Construction Methodology-I", code: "28831" }
+      ],
+      4: [
+        { name: "Accounting", code: "25841" },
+        { name: "Estimating & Costing-I", code: "26442" },
+        { name: "Civil CAD-I", code: "26443" },
+        { name: "Surveying-II", code: "26444" },
+        { name: "Geotechnical Engineering", code: "26445" },
+        { name: "Hydrology", code: "26446" },
+        { name: "Construction Methodology-II", code: "28841" },
+        { name: "Construction Safety", code: "28842" }
+      ],
+      5: [
+        { name: "Industrial Management", code: "25852" },
+        { name: "Foundation Engineering", code: "26451" },
+        { name: "Civil CAD-II", code: "26452" },
+        { name: "Surveying-III", code: "26453" },
+        { name: "Theory of Structure", code: "26454" },
+        { name: "Water Supply Engineering", code: "26455" },
+        { name: "Environmental Studies", code: "29041" }
+      ],
+      6: [
+        { name: "Hydraulics", code: "26456" },
+        { name: "Water Resources Engineering", code: "26461" },
+        { name: "Transportation Engineering-I", code: "26463" },
+        { name: "Design of Structure-I", code: "26464" },
+        { name: "Advanced Construction", code: "28861" },
+        { name: "Building Facilities & Law", code: "28862" },
+        { name: "Steel Structures", code: "28863" }
+      ],
+      7: [
+        { name: "Principles of Marketing", code: "25851" },
+        { name: "Innovation & Entrepreneurship", code: "25853" },
+        { name: "Sanitary Engineering", code: "26472" },
+        { name: "Transportation Engineering-II", code: "26473" },
+        { name: "Design of Structure-II", code: "26474" },
+        { name: "Estimating & Costing-II", code: "26475" },
+        { name: "Construction Management & Documentation", code: "28871" },
+        { name: "Construction Engineering Project", code: "28872" }
+      ],
+      8: [
+        { name: "Industrial Attachment & Project Presentation", code: "28881" }
+      ]
+    }
+  },
+  "electromedical-technology": {
+    code: 86,
+    name: "Electromedical Technology",
+    regulation: "2022",
+    category: "Specialized",
+    semesters: {
+      1: [
+        { name: "Engineering Drawing", code: "21011" },
+        { name: "Bangla-I", code: "25711" },
+        { name: "English-I", code: "25712" },
+        { name: "Physical Education & Life Skills Development", code: "25812" },
+        { name: "Mathematics-I", code: "25911" },
+        { name: "Physics-I", code: "25912" },
+        { name: "Basic Electricity", code: "26711" },
+        { name: "Human Anatomy and Physiology", code: "28611" }
+      ],
+      2: [
+        { name: "Bangla-II", code: "25721" },
+        { name: "English-II", code: "25722" },
+        { name: "Mathematics-II", code: "25921" },
+        { name: "Physics-II", code: "25922" },
+        { name: "Electrical Circuits-I", code: "26721" },
+        { name: "Basic Electronics", code: "26811" },
+        { name: "Basic Biomedical Engineering", code: "28621" }
+      ],
+      3: [
+        { name: "Social Science", code: "25811" },
+        { name: "Chemistry", code: "25913" },
+        { name: "Mathematics-III", code: "25931" },
+        { name: "Computer Office Application", code: "26611" },
+        { name: "Electrical Circuits-II", code: "26731" },
+        { name: "Medical Transducer and Sensors", code: "28631" },
+        { name: "Operating Room Equipment", code: "28632" }
+      ],
+      4: [
+        { name: "Accounting", code: "25841" },
+        { name: "Electrical Installation, Planning and Estimating", code: "26741" },
+        { name: "DC Machine", code: "26742" },
+        { name: "Electrical & Electronic Measurements-I", code: "26752" },
+        { name: "Digital Electronics", code: "26845" },
+        { name: "Dental Equipment", code: "28641" },
+        { name: "Anesthesia and Respiratory Equipment", code: "28642" }
+      ],
+      5: [
+        { name: "Principles of Marketing", code: "25851" },
+        { name: "Industrial Management", code: "25852" },
+        { name: "Programming in C", code: "26667" },
+        { name: "AC Machine-I", code: "26761" },
+        { name: "Electrical & Electronic Measurements-II", code: "26763" },
+        { name: "Radiology and Imaging Equipment", code: "28651" },
+        { name: "Fibre Optics and Laser in Medical Field", code: "28652" },
+        { name: "Physiotherapy and Rehabilitation Devices", code: "28653" }
+      ],
+      6: [
+        { name: "Transmission and Distribution of Electrical Power", code: "26764" },
+        { name: "AC Machine-II", code: "26771" },
+        { name: "Diagnostic and Laboratory Equipment", code: "28661" },
+        { name: "Microprocessor and Biomedical Application", code: "28662" },
+        { name: "Testing and Maintenance Biomedical Equipment", code: "28663" },
+        { name: "CAD in Biomedical Engineering", code: "28664" },
+        { name: "Environmental Studies", code: "29041" }
+      ],
+      7: [
+        { name: "Business Communication", code: "25831" },
+        { name: "Innovation & Entrepreneurship", code: "25853" },
+        { name: "Switch Gear and Protection", code: "26773" },
+        { name: "Advance Biomedical Equipment", code: "28671" },
+        { name: "ICU and CCU Equipment", code: "28672" },
+        { name: "Biomedical Engineering Project", code: "28673" },
+        { name: "Medical Physics and Nuclear Instruments", code: "28674" }
+      ],
+      8: [
+        { name: "Industrial Attachment & Project Presentation", code: "28681" }
+      ]
+    }
+  },
+  "printing-technology": {
+    code: 95,
+    name: "Printing Technology",
+    regulation: "2022",
+    category: "Specialized",
+    semesters: {
+      1: [
+        { name: "Engineering Drawing", code: "21011" },
+        { name: "Bangla-I", code: "25711" },
+        { name: "English-I", code: "25712" },
+        { name: "Social Science", code: "25811" },
+        { name: "Physical Education & Life Skills Development", code: "25812" },
+        { name: "Mathematics-I", code: "25911" },
+        { name: "Physics-I", code: "25912" },
+        { name: "Basic Workshop Practice", code: "27011" },
+        { name: "Printing Basics", code: "29511" }
+      ],
+      2: [
+        { name: "Bangla-II", code: "25721" },
+        { name: "English-II", code: "25722" },
+        { name: "Mathematics-II", code: "25921" },
+        { name: "Physics-II", code: "25922" },
+        { name: "Computer Office Application", code: "26611" },
+        { name: "Basic Electricity", code: "26711" },
+        { name: "Offset Machine Operation", code: "29521" }
+      ],
+      3: [
+        { name: "Business Communication", code: "25831" },
+        { name: "Chemistry", code: "25913" },
+        { name: "Mathematics-III", code: "25931" },
+        { name: "Basic Electronics", code: "26811" },
+        { name: "Graphic Materials", code: "29531" },
+        { name: "Graphic Design-I", code: "29631" },
+        { name: "Basic Photography", code: "29632" }
+      ],
+      4: [
+        { name: "Accounting", code: "25841" },
+        { name: "Environmental Studies", code: "29041" },
+        { name: "Screen Printing", code: "29541" },
+        { name: "Safety and Maintenance", code: "29542" },
+        { name: "Image Carrier Preparation", code: "29641" },
+        { name: "Graphic Design-II", code: "29642" },
+        { name: "Video and Sound Editing", code: "29643" }
+      ],
+      5: [
+        { name: "Industrial Management", code: "25852" },
+        { name: "Flexo & Can Printing", code: "29551" },
+        { name: "Color Printing-I", code: "29552" },
+        { name: "Printing Quality Control", code: "29553" },
+        { name: "Ink & Paper", code: "29554" },
+        { name: "Digital Design & Printing", code: "29555" },
+        { name: "Graphic Design-III", code: "29655" }
+      ],
+      6: [
+        { name: "Principles of Marketing", code: "25851" },
+        { name: "Printing Costing & Estimating", code: "29561" },
+        { name: "Color Printing-II", code: "29562" },
+        { name: "Printing Professional Practice-I", code: "29563" },
+        { name: "Gravure Printing", code: "29564" },
+        { name: "Packaging Design-I", code: "29654" },
+        { name: "Image Manipulation", code: "29664" }
+      ],
+      7: [
+        { name: "Innovation & Entrepreneurship", code: "25853" },
+        { name: "Color Printing-III", code: "29571" },
+        { name: "Trouble Shooting Management in Printing Industry", code: "29572" },
+        { name: "Print Finishing", code: "29573" },
+        { name: "Printing Professional Practice-II", code: "29574" },
+        { name: "Packaging Design-II", code: "29672" },
+        { name: "Graphic Communication", code: "29675" }
+      ],
+      8: [
+        { name: "Industrial Attachment & Project Presentation", code: "29581" }
+      ]
+    }
+  },
+  "graphic-design-technology": {
+    code: 96,
+    name: "Graphic Design Technology",
+    regulation: "2022",
+    category: "Specialized",
+    semesters: {
+      1: [
+        { name: "Engineering Drawing", code: "21011" },
+        { name: "Bangla-I", code: "25711" },
+        { name: "English-I", code: "25712" },
+        { name: "Social Science", code: "25811" },
+        { name: "Physical Education & Life Skills Development", code: "25812" },
+        { name: "Mathematics-I", code: "25911" },
+        { name: "Physics-I", code: "25912" },
+        { name: "Basic Workshop Practice", code: "27011" },
+        { name: "Printing Basics", code: "29511" }
+      ],
+      2: [
+        { name: "Bangla-II", code: "25721" },
+        { name: "English-II", code: "25722" },
+        { name: "Mathematics-II", code: "25921" },
+        { name: "Physics-II", code: "25922" },
+        { name: "Computer Office Application", code: "26611" },
+        { name: "Basic Electricity", code: "26711" },
+        { name: "Offset Machine Operation", code: "29521" }
+      ],
+      3: [
+        { name: "Business Communication", code: "25831" },
+        { name: "Chemistry", code: "25913" },
+        { name: "Mathematics-III", code: "25931" },
+        { name: "Basic Electronics", code: "26811" },
+        { name: "Graphic Materials", code: "29531" },
+        { name: "Graphic Design-I", code: "29631" },
+        { name: "Basic Photography", code: "29632" }
+      ],
+      4: [
+        { name: "Accounting", code: "25841" },
+        { name: "Environmental Studies", code: "29041" },
+        { name: "Screen Printing", code: "29541" },
+        { name: "Safety and Maintenance", code: "29542" },
+        { name: "Image Carrier Preparation", code: "29641" },
+        { name: "Graphic Design-II", code: "29642" },
+        { name: "Video and Sound Editing", code: "29643" }
+      ],
+      5: [
+        { name: "Industrial Management", code: "25852" },
+        { name: "Digital Design & Printing", code: "29555" },
+        { name: "Advertising Design", code: "29651" },
+        { name: "Fabric Design", code: "29652" },
+        { name: "Design & Editing", code: "29653" },
+        { name: "Packaging Design-I", code: "29654" },
+        { name: "Graphic Design-III", code: "29655" }
+      ],
+      6: [
+        { name: "Principles of Marketing", code: "25851" },
+        { name: "Printing Costing & Estimating", code: "29561" },
+        { name: "Desktop Publishing", code: "29661" },
+        { name: "Web Design & Development", code: "29662" },
+        { name: "Graphic Design-IV", code: "29663" },
+        { name: "Image Manipulation", code: "29664" },
+        { name: "Graphic Professional Practice-I", code: "29665" }
+      ],
+      7: [
+        { name: "Innovation & Entrepreneurship", code: "25853" },
+        { name: "Animation", code: "29671" },
+        { name: "Packaging Design-II", code: "29672" },
+        { name: "Advanced Digital Photography", code: "29673" },
+        { name: "Graphic Design-V", code: "29674" },
+        { name: "Graphic Communication", code: "29675" },
+        { name: "Graphic Professional Practice-II", code: "29676" }
+      ],
+      8: [
+        { name: "Industrial Attachment & Project Presentation", code: "29681" }
+      ]
+    }
+  },
+  "diploma-in-agriculture": {
+    code: 23,
+    name: "Diploma In Agriculture",
+    regulation: "2022",
+    category: "Agriculture",
+    semesters: {
+      1: [
+        { name: "Introduction to Bangladesh Agriculture", code: "22311" },
+        { name: "Bangla-I", code: "25711" },
+        { name: "English-I", code: "25712" },
+        { name: "Physical Education & Life Skills Development", code: "25812" },
+        { name: "Mathematics-I", code: "25911" },
+        { name: "Physics-I", code: "25912" },
+        { name: "Chemistry-I", code: "25914" },
+        { name: "Biology-I", code: "25915" }
+      ],
+      2: [
+        { name: "Production Technology of Agronomic Crops-I", code: "22321" },
+        { name: "Bangla-II", code: "25721" },
+        { name: "English-II", code: "25722" },
+        { name: "Physics-II", code: "25922" },
+        { name: "Chemistry-II", code: "25924" },
+        { name: "Biology-II", code: "25925" },
+        { name: "Computer Office Application", code: "26611" }
+      ],
+      3: [
+        { name: "Production Technology of Agronomic Crops-II", code: "22331" },
+        { name: "Agricultural Economics", code: "22332" },
+        { name: "Soil Science-I", code: "22333" },
+        { name: "Cultivation of Vegetables", code: "22334" },
+        { name: "Agricultural Extension-I", code: "22335" },
+        { name: "Fish Culture Management", code: "22336" }
+      ],
+      4: [
+        { name: "Soil Science-II", code: "22341" },
+        { name: "Mensuration and Statistics", code: "22342" },
+        { name: "Forest and Forestry", code: "22343" },
+        { name: "Cultivation of Fruits", code: "22344" },
+        { name: "Fundamental and Ecological Entomology", code: "22345" },
+        { name: "Livestock and Poultry Production", code: "22346" }
+      ],
+      5: [
+        { name: "Agroforestry & Biodiversity", code: "22351" },
+        { name: "Crop Disease Management", code: "22352" },
+        { name: "Plant Nutrition and Fertilizer Management", code: "22353" },
+        { name: "Cultivation of Flowers & Ornamental Plants", code: "22354" },
+        { name: "Agriculture Mechanization", code: "22355" },
+        { name: "Irrigation and Water Management", code: "22356" }
+      ],
+      6: [
+        { name: "Organic Agriculture", code: "22361" },
+        { name: "Pest Management and Economic Entomology", code: "22362" },
+        { name: "Horticultural Nursery Management", code: "22363" },
+        { name: "Seed Technology", code: "22364" },
+        { name: "Food Processing", code: "22365" },
+        { name: "Agricultural Extension-II", code: "22366" }
+      ],
+      7: [
+        { name: "Farm Management", code: "22371" },
+        { name: "Agro Environment and Disaster Management", code: "22372" },
+        { name: "Food and Nutrition Management", code: "22373" },
+        { name: "Self Employment and Entrepreneurship Development", code: "22374" },
+        { name: "Postharvest Technology", code: "22375" },
+        { name: "Cultivation of Species Crops", code: "22376" },
+        { name: "Co-operative and Agricultural Marketing", code: "22377" }
+      ],
+      8: [
+        { name: "Field Attachment Training & Project Presentation", code: "22381" }
+      ]
+    }
+  },
+  "diploma-in-fisheries": {
+    code: 74,
+    name: "Diploma In Fisheries",
+    regulation: "2022",
+    category: "Agriculture",
+    semesters: {
+      1: [
+        { name: "Bangla-I", code: "25711" },
+        { name: "English-I", code: "25712" },
+        { name: "Physical Education & Life Skills Development", code: "25812" },
+        { name: "Mathematics-I", code: "25911" },
+        { name: "Physics-I", code: "25912" },
+        { name: "Chemistry-I", code: "25914" },
+        { name: "Biology-I", code: "25915" },
+        { name: "Introduction and Probability of Fisheries Resources in Bangladesh", code: "27411" }
+      ],
+      2: [
+        { name: "Bangla-II", code: "25721" },
+        { name: "English-II", code: "25722" },
+        { name: "Physics-II", code: "25922" },
+        { name: "Chemistry-II", code: "25924" },
+        { name: "Biology-II", code: "25925" },
+        { name: "Computer Office Application", code: "26611" },
+        { name: "Limnology", code: "27421" }
+      ],
+      3: [
+        { name: "Introduction to Bangladesh Agriculture", code: "27431" },
+        { name: "Ichthyology", code: "27432" },
+        { name: "Aquatic Ecology", code: "27433" },
+        { name: "Aquaculture Engineering-1", code: "27434" },
+        { name: "Livestock and Poultry Production", code: "27435" },
+        { name: "Fish Physiology", code: "27436" }
+      ],
+      4: [
+        { name: "Fresh Water Aquaculture", code: "27441" },
+        { name: "Open Water Aquaculture Management", code: "27442" },
+        { name: "Fish Pathology & Parasitology", code: "27443" },
+        { name: "Fish Nursery Management", code: "27444" },
+        { name: "Fish Feed & Nutrition-I", code: "27445" },
+        { name: "Aquaculture Engineering-II", code: "27446" },
+        { name: "Aquatic Biodiversity Conservation & Management", code: "27447" }
+      ],
+      5: [
+        { name: "Modern Aquaculture", code: "27451" },
+        { name: "Fish Feed and Nutrition-II", code: "27452" },
+        { name: "Coastal Aquaculture Management", code: "27453" },
+        { name: "Fisheries Microbiology", code: "27454" },
+        { name: "Fisheries Extension", code: "27455" },
+        { name: "Fish Disease & Control", code: "27456" },
+        { name: "Fish Hatchery Management", code: "27457" }
+      ],
+      6: [
+        { name: "Shellfish Hatchery Management", code: "27461" },
+        { name: "Environmental Management for Aquaculture", code: "27462" },
+        { name: "Fish Harvesting, Handling & Preservation", code: "27463" },
+        { name: "Fish Processing & Fishery Products", code: "27464" },
+        { name: "Marine Fisheries Resources", code: "27465" },
+        { name: "Agricultural Economics", code: "27466" }
+      ],
+      7: [
+        { name: "Fish Inspection & Quality Control", code: "27471" },
+        { name: "Fisheries Marketing and Cooperatives", code: "27472" },
+        { name: "Fisheries Resources Management and Planning", code: "27473" },
+        { name: "Good Aquaculture Practices", code: "27474" },
+        { name: "Genetics and Fish Breeding", code: "27475" },
+        { name: "Integrated Aquaculture", code: "27476" },
+        { name: "Self Employment and Entrepreneurship Development", code: "27477" }
+      ],
+      8: [
+        { name: "Field Attachment Training & Project Presentation", code: "27481" }
+      ]
+    }
+  },
+  "diploma-in-forestry": {
+    code: 20,
+    name: "Diploma In Forestry",
+    regulation: "2022",
+    category: "Agriculture",
+    semesters: {
+      1: [
+        { name: "Introduction to Forestry", code: "22011" },
+        { name: "Bangla-I", code: "25711" },
+        { name: "English-I", code: "25712" },
+        { name: "Physical Education & Life Skills Development", code: "25812" },
+        { name: "Mathematics-I", code: "25911" },
+        { name: "Physics-I", code: "25912" },
+        { name: "Chemistry-I", code: "25914" },
+        { name: "Biology-I", code: "25915" }
+      ],
+      2: [
+        { name: "Geology & Soil Science", code: "22021" },
+        { name: "Bangla-II", code: "25721" },
+        { name: "English-II", code: "25722" },
+        { name: "Physics-II", code: "25922" },
+        { name: "Chemistry-II", code: "25924" },
+        { name: "Biology-II", code: "25925" },
+        { name: "Computer Office Application", code: "26611" },
+        { name: "Physical Exercises-I", code: "22022" }
+      ],
+      3: [
+        { name: "Forest Mensuration", code: "22031" },
+        { name: "Physical Exercises-II", code: "22032" },
+        { name: "Soil Conservation and Watershed Management", code: "22033" },
+        { name: "Principle and Practice of Silviculture", code: "22034" },
+        { name: "Forest Statistics", code: "22035" },
+        { name: "Project Work-I", code: "22036" },
+        { name: "Forest Ecology", code: "22037" },
+        { name: "Application of Computer in Forestry", code: "22038" }
+      ],
+      4: [
+        { name: "Forest Engineering-I", code: "22041" },
+        { name: "Physical Exercises-III", code: "22042" },
+        { name: "Forest Protection", code: "22043" },
+        { name: "Plantation Silviculture", code: "22044" },
+        { name: "Forest Based Rural Industries & Community Development", code: "22045" },
+        { name: "Project Work-II", code: "22046" },
+        { name: "Forest Utilization", code: "22047" },
+        { name: "Sociology", code: "22048" }
+      ],
+      5: [
+        { name: "Forest Engineering-II", code: "22051" },
+        { name: "Games and Sports-I", code: "22052" },
+        { name: "Silvicultural System", code: "22053" },
+        { name: "Forest Policy and Law-I", code: "22054" },
+        { name: "Forest Surveying and Settlement", code: "22055" },
+        { name: "Wildlife Management", code: "22056" },
+        { name: "Protected Area Management and Eco-tourism", code: "22057" },
+        { name: "Forest Genetics and Tree Improvement", code: "22058" }
+      ],
+      6: [
+        { name: "Forestry Extension", code: "22061" },
+        { name: "Games and Sports-II", code: "22062" },
+        { name: "Social Forestry", code: "22063" },
+        { name: "Forest Policy and Law-2", code: "22064" },
+        { name: "Forest Management", code: "22065" },
+        { name: "Forest Accounts and Procedures", code: "22066" },
+        { name: "Agroforestry", code: "22067" },
+        { name: "Entrepreneurship", code: "22068" }
+      ],
+      7: [
+        { name: "Biodiversity Conservation", code: "22071" },
+        { name: "Games and Sports-III", code: "22072" },
+        { name: "Rubber, Tea, Agar and Medicinal Plant Cultivation", code: "22073" },
+        { name: "Climate Change and Forestry", code: "22074" },
+        { name: "Mangrove Ecology And Coastal Plantation", code: "22075" },
+        { name: "Forest Resources Economics", code: "22076" },
+        { name: "GIS And Remote Sensing In Forestry", code: "22077" },
+        { name: "Environmental Studies", code: "22078" }
+      ],
+      8: [
+        { name: "Field Attachment Training & Project Presentation", code: "74811" }
+      ]
+    }
+  },
+  "yarn-manufacturing": {
+    code: 11,
+    name: "Yarn Manufacturing",
+    regulation: "2022",
+    category: "Textile",
+    semesters: {
+      1: [
+        { name: "General Textile Processing-I", code: "21111" },
+        { name: "Bangla-I", code: "25711" },
+        { name: "English-I", code: "25712" },
+        { name: "Social Science", code: "25811" },
+        { name: "Physical Education & Life Skills Development", code: "25812" },
+        { name: "Mathematics-I", code: "25911" },
+        { name: "Physics-I", code: "25912" },
+        { name: "Chemistry-I", code: "25914" }
+      ],
+      2: [
+        { name: "Engineering Drawing", code: "21011" },
+        { name: "General Textile Processing-II", code: "21121" },
+        { name: "Bangla-II", code: "25721" },
+        { name: "English-II", code: "25722" },
+        { name: "Mathematics-II", code: "25921" },
+        { name: "Physics-II", code: "25922" },
+        { name: "Chemistry-II", code: "25924" }
+      ],
+      3: [
+        { name: "Natural Textile Fibre", code: "21131" },
+        { name: "Yarn Manufacturing-I", code: "21132" },
+        { name: "Fabric Manufacturing-I", code: "21231" },
+        { name: "Business Communication", code: "25831" },
+        { name: "Biology-I", code: "25915" },
+        { name: "Computer Office Application", code: "28511" },
+        { name: "Basic Electricity", code: "26711" }
+      ],
+      4: [
+        { name: "Man Made Fibre & Filament", code: "21141" },
+        { name: "Yarn Manufacturing-II", code: "21142" },
+        { name: "Fabric Manufacturing-II", code: "21241" },
+        { name: "Wet Processing-I", code: "21341" },
+        { name: "Apparel Manufacturing-I", code: "21441" },
+        { name: "Basic Electronics", code: "26811" },
+        { name: "Basic Workshop Practice", code: "27011" }
+      ],
+      5: [
+        { name: "Textile Testing & Quality Control-I", code: "21151" },
+        { name: "Fabric Structure & Design", code: "21251" },
+        { name: "Wet Processing-II", code: "21351" },
+        { name: "Apparel Manufacturing-II", code: "21451" },
+        { name: "General Maintenance & Utility Service", code: "21861" },
+        { name: "Accounting & Cost Management", code: "25842" }
+      ],
+      6: [
+        { name: "Textile Testing & Quality Control-II", code: "21161" },
+        { name: "Advanced Yarn Manufacturing-I", code: "21162" },
+        { name: "Spinning Process Control", code: "21163" },
+        { name: "Textile Calculation", code: "21164" },
+        { name: "Application of Computer in Yarn Manufacturing", code: "21165" },
+        { name: "Principles of Marketing", code: "25851" },
+        { name: "Environmental Studies", code: "29041" }
+      ],
+      7: [
+        { name: "Advanced Yarn Manufacturing-II", code: "21171" },
+        { name: "Special Yarn Production", code: "21172" },
+        { name: "Production Planning & Control", code: "21173" },
+        { name: "Textile Waste Recycling", code: "21174" },
+        { name: "Yarn Manufacturing Machinery and Maintenance", code: "21862" },
+        { name: "Industrial Management", code: "25852" },
+        { name: "Innovation & Entrepreneurship", code: "25853" }
+      ],
+      8: [
+        { name: "Industrial Training & Graduation Project Presentation", code: "21181" }
+      ]
+    }
+  },
+  "fabric-manufacturing": {
+    code: 12,
+    name: "Fabric Manufacturing",
+    regulation: "2022",
+    category: "Textile",
+    semesters: {
+      1: [
+        { name: "General Textile Processing-I", code: "21111" },
+        { name: "Bangla-I", code: "25711" },
+        { name: "English-I", code: "25712" },
+        { name: "Social Science", code: "25811" },
+        { name: "Physical Education & Life Skills Development", code: "25812" },
+        { name: "Mathematics-I", code: "25911" },
+        { name: "Physics-I", code: "25912" },
+        { name: "Chemistry-I", code: "25914" }
+      ],
+      2: [
+        { name: "Engineering Drawing", code: "21011" },
+        { name: "General Textile Processing-II", code: "21121" },
+        { name: "Bangla-II", code: "25721" },
+        { name: "English-II", code: "25722" },
+        { name: "Mathematics-II", code: "25921" },
+        { name: "Physics-II", code: "25922" },
+        { name: "Chemistry-II", code: "25924" }
+      ],
+      3: [
+        { name: "Natural Textile Fibre", code: "21131" },
+        { name: "Yarn Manufacturing-I", code: "21132" },
+        { name: "Fabric Manufacturing-I", code: "21231" },
+        { name: "Business Communication", code: "25831" },
+        { name: "Biology-I", code: "25915" },
+        { name: "Computer Office Application", code: "28511" },
+        { name: "Basic Electricity", code: "26711" }
+      ],
+      4: [
+        { name: "Man Made Fibre & Filament", code: "21141" },
+        { name: "Yarn Manufacturing-II", code: "21142" },
+        { name: "Fabric Manufacturing-II", code: "21241" },
+        { name: "Wet Processing-I", code: "21341" },
+        { name: "Apparel Manufacturing-I", code: "21441" },
+        { name: "Basic Electronics", code: "26811" },
+        { name: "Basic Workshop Practice", code: "27011" }
+      ],
+      5: [
+        { name: "Textile Testing & Quality Control-I", code: "21151" },
+        { name: "Fabric Structure & Design", code: "21251" },
+        { name: "Wet Processing-II", code: "21351" },
+        { name: "Apparel Manufacturing-II", code: "21451" },
+        { name: "General Maintenance & Utility Service", code: "21861" },
+        { name: "Accounting & Cost Management", code: "25842" }
+      ],
+      6: [
+        { name: "Textile Testing & Quality Control-II", code: "21161" },
+        { name: "Textile Calculation", code: "21164" },
+        { name: "Advanced Fabric Manufacturing-I", code: "21261" },
+        { name: "Advance Fabric Structure & Design", code: "21262" },
+        { name: "Application of Computer in Fabric Manufacturing", code: "21263" },
+        { name: "Principles of Marketing", code: "25851" },
+        { name: "Environmental Studies", code: "29041" }
+      ],
+      7: [
+        { name: "Production Planning & Control", code: "21173" },
+        { name: "Textile Waste Recycling", code: "21174" },
+        { name: "Advanced Fabric Manufacturing-II", code: "21271" },
+        { name: "Technical Textiles", code: "21272" },
+        { name: "Fabric Manufacturing Machinery and Maintenance", code: "21863" },
+        { name: "Industrial Management", code: "25852" },
+        { name: "Innovation & Entrepreneurship", code: "25853" }
+      ],
+      8: [
+        { name: "Industrial Training & Graduation Project Presentation", code: "21281" }
+      ]
+    }
+  },
+  "wet-processing": {
+    code: 13,
+    name: "Wet Processing",
+    regulation: "2022",
+    category: "Textile",
+    semesters: {
+      1: [
+        { name: "General Textile Processing-I", code: "21111" },
+        { name: "Bangla-I", code: "25711" },
+        { name: "English-I", code: "25712" },
+        { name: "Social Science", code: "25811" },
+        { name: "Physical Education & Life Skills Development", code: "25812" },
+        { name: "Mathematics-I", code: "25911" },
+        { name: "Physics-I", code: "25912" },
+        { name: "Chemistry-I", code: "25914" }
+      ],
+      2: [
+        { name: "Engineering Drawing", code: "21011" },
+        { name: "General Textile Processing-II", code: "21121" },
+        { name: "Bangla-II", code: "25721" },
+        { name: "English-II", code: "25722" },
+        { name: "Mathematics-II", code: "25921" },
+        { name: "Physics-II", code: "25922" },
+        { name: "Chemistry-II", code: "25924" }
+      ],
+      3: [
+        { name: "Natural Textile Fibre", code: "21131" },
+        { name: "Yarn Manufacturing-I", code: "21132" },
+        { name: "Fabric Manufacturing-I", code: "21231" },
+        { name: "Business Communication", code: "25831" },
+        { name: "Biology-I", code: "25915" },
+        { name: "Computer Office Application", code: "28511" },
+        { name: "Basic Electricity", code: "26711" }
+      ],
+      4: [
+        { name: "Man Made Fibre & Filament", code: "21141" },
+        { name: "Yarn Manufacturing-II", code: "21142" },
+        { name: "Fabric Manufacturing-II", code: "21241" },
+        { name: "Wet Processing-I", code: "21341" },
+        { name: "Apparel Manufacturing-I", code: "21441" },
+        { name: "Basic Electronics", code: "26811" },
+        { name: "Basic Workshop Practice", code: "27011" }
+      ],
+      5: [
+        { name: "Textile Testing & Quality Control-I", code: "21151" },
+        { name: "Fabric Structure & Design", code: "21251" },
+        { name: "Wet Processing-II", code: "21351" },
+        { name: "Apparel Manufacturing-II", code: "21451" },
+        { name: "General Maintenance & Utility Service", code: "21861" },
+        { name: "Accounting & Cost Management", code: "25842" }
+      ],
+      6: [
+        { name: "Textile Testing & Quality Control-II", code: "21161" },
+        { name: "Advanced Wet Processing-I", code: "21362" },
+        { name: "Textiles Printing", code: "21363" },
+        { name: "Textile Finishing", code: "21364" },
+        { name: "Application of Computer in Textile Wet Processing", code: "21365" },
+        { name: "Principles of Marketing", code: "25851" },
+        { name: "Industrial Management", code: "25852" }
+      ],
+      7: [
+        { name: "Production Planning & Control", code: "21173" },
+        { name: "Textile Waste Recycling", code: "21174" },
+        { name: "Advanced Wet Processing-II", code: "21371" },
+        { name: "Textile Design & Color", code: "21372" },
+        { name: "Advanced Printing & Finishing", code: "21373" },
+        { name: "Wet Process Machinery and Maintenance", code: "21873" },
+        { name: "Innovation & Entrepreneurship", code: "25853" },
+        { name: "Environmental Studies", code: "29041" }
+      ],
+      8: [
+        { name: "Industrial Training & Graduation Project Presentation", code: "21381" }
+      ]
+    }
+  },
+  "apparel-manufacturing": {
+    code: 14,
+    name: "Apparel Manufacturing",
+    regulation: "2022",
+    category: "Textile",
+    semesters: {
+      1: [
+        { name: "General Textile Processing-I", code: "21111" },
+        { name: "Bangla-I", code: "25711" },
+        { name: "English-I", code: "25712" },
+        { name: "Social Science", code: "25811" },
+        { name: "Physical Education & Life Skills Development", code: "25812" },
+        { name: "Mathematics-I", code: "25911" },
+        { name: "Physics-I", code: "25912" },
+        { name: "Chemistry-I", code: "25914" }
+      ],
+      2: [
+        { name: "Engineering Drawing", code: "21011" },
+        { name: "General Textile Processing-II", code: "21121" },
+        { name: "Bangla-II", code: "25721" },
+        { name: "English-II", code: "25722" },
+        { name: "Mathematics-II", code: "25921" },
+        { name: "Physics-II", code: "25922" },
+        { name: "Chemistry-II", code: "25924" }
+      ],
+      3: [
+        { name: "Natural Textile Fibre", code: "21131" },
+        { name: "Yarn Manufacturing-I", code: "21132" },
+        { name: "Fabric Manufacturing-I", code: "21231" },
+        { name: "Business Communication", code: "25831" },
+        { name: "Biology-I", code: "25915" },
+        { name: "Computer Office Application", code: "28511" },
+        { name: "Basic Electricity", code: "26711" }
+      ],
+      4: [
+        { name: "Man Made Fibre & Filament", code: "21141" },
+        { name: "Yarn Manufacturing-II", code: "21142" },
+        { name: "Fabric Manufacturing-II", code: "21241" },
+        { name: "Wet Processing-I", code: "21341" },
+        { name: "Apparel Manufacturing-I", code: "21441" },
+        { name: "Basic Electronics", code: "26811" },
+        { name: "Basic Workshop Practice", code: "27011" }
+      ],
+      5: [
+        { name: "Textile Testing & Quality Control-I", code: "21151" },
+        { name: "Fabric Structure & Design", code: "21251" },
+        { name: "Wet Processing-II", code: "21351" },
+        { name: "Apparel Manufacturing-II", code: "21451" },
+        { name: "General Maintenance & Utility Service", code: "21861" },
+        { name: "Accounting & Cost Management", code: "25842" }
+      ],
+      6: [
+        { name: "Textile Testing & Quality Control-II", code: "21161" },
+        { name: "Advance Fabric Structure & Design", code: "21262" },
+        { name: "Commercial Issues in Apparel Business", code: "21461" },
+        { name: "Application of Computer in Apparel Manufacturing", code: "21462" },
+        { name: "Garments Washing & Dyeing", code: "21463" },
+        { name: "Fundamental of Merchandising", code: "21761" },
+        { name: "Principles of Marketing", code: "25851" }
+      ],
+      7: [
+        { name: "Production Planning & Control", code: "21173" },
+        { name: "Textile Waste Recycling", code: "21174" },
+        { name: "Special Apparel Production", code: "21471" },
+        { name: "Compliance in Apparel Industry", code: "21472" },
+        { name: "Apparel Manufacturing Machinery and Maintenance", code: "21875" },
+        { name: "Industrial Management", code: "25852" },
+        { name: "Innovation & Entrepreneurship", code: "25853" },
+        { name: "Environmental Studies", code: "29041" }
+      ],
+      8: [
+        { name: "Industrial Training & Graduation Project Presentation", code: "21481" }
+      ]
+    }
+  },
+  "fashion-design": {
+    code: 16,
+    name: "Fashion Design",
+    regulation: "2022",
+    category: "Textile",
+    semesters: {
+      1: [
+        { name: "General Textile Processing-I", code: "21111" },
+        { name: "Bangla-I", code: "25711" },
+        { name: "English-I", code: "25712" },
+        { name: "Physical Education & Life Skills Development", code: "25812" },
+        { name: "Mathematics-I", code: "25911" },
+        { name: "Physics-I", code: "25912" },
+        { name: "Chemistry-I", code: "25914" },
+        { name: "Basic Workshop Practice", code: "27011" }
+      ],
+      2: [
+        { name: "Engineering Drawing", code: "21011" },
+        { name: "General Textile Processing-II", code: "21121" },
+        { name: "Bangla-II", code: "25721" },
+        { name: "English-II", code: "25722" },
+        { name: "Mathematics-II", code: "25921" },
+        { name: "Physics-II", code: "25922" },
+        { name: "Chemistry-II", code: "25924" },
+        { name: "Accounting & Cost Management", code: "25842" }
+      ],
+      3: [
+        { name: "Natural Textile Fibre", code: "21131" },
+        { name: "Yarn Manufacturing-I", code: "21132" },
+        { name: "Fabric Manufacturing-I", code: "21231" },
+        { name: "Social Science", code: "25811" },
+        { name: "Fundamentals of Art & Design", code: "21632" },
+        { name: "Computer Office Application", code: "28511" },
+        { name: "Basic Electricity", code: "26711" }
+      ],
+      4: [
+        { name: "Man Made Fibre & Filament", code: "21141" },
+        { name: "Yarn Manufacturing-II", code: "21142" },
+        { name: "Fabric Manufacturing-II", code: "21241" },
+        { name: "Wet Processing-I", code: "21341" },
+        { name: "Apparel Manufacturing-I", code: "21441" },
+        { name: "Basic Electronics", code: "26811" },
+        { name: "Biology-I", code: "25915" },
+        { name: "History of Art & Fashion", code: "21641" }
+      ],
+      5: [
+        { name: "Textile Testing & Quality Control-I", code: "21151" },
+        { name: "Fabric Structure & Design", code: "21251" },
+        { name: "Wet Processing-II", code: "21351" },
+        { name: "Apparel Manufacturing-II", code: "21451" },
+        { name: "Principles of Design", code: "21651" },
+        { name: "Environmental Studies", code: "29041" }
+      ],
+      6: [
+        { name: "Textile Testing & Quality Control-II", code: "21161" },
+        { name: "Fashion Illustration & Accessories Design", code: "21661" },
+        { name: "Draping", code: "21662" },
+        { name: "Surface Ornamentation", code: "21663" },
+        { name: "Digital Fashion Design", code: "21664" },
+        { name: "Fashion Forecasting & Trend Analysis", code: "21665" },
+        { name: "Principles of Marketing", code: "25851" }
+      ],
+      7: [
+        { name: "Computer Aided Design & Manufacturing", code: "21671" },
+        { name: "Fashion Design Portfolio and Collection", code: "21672" },
+        { name: "Fashion Photography", code: "21673" },
+        { name: "Fashion Merchandising", code: "21674" },
+        { name: "Sustainable Fashion", code: "21675" },
+        { name: "Innovation & Entrepreneurship", code: "25853" },
+        { name: "Business Communication", code: "25831" }
+      ],
+      8: [
+        { name: "Industrial Training & Graduation Project Presentation", code: "21681" }
+      ]
+    }
+  },
+  "merchandising-market": {
+    code: 17,
+    name: "Merchandising & Market",
+    regulation: "2022",
+    category: "Textile",
+    semesters: {
+      1: [
+        { name: "General Textile Processing-I", code: "21111" },
+        { name: "Bangla-I", code: "25711" },
+        { name: "English-I", code: "25712" },
+        { name: "Social Science", code: "25811" },
+        { name: "Physical Education & Life Skills Development", code: "25812" },
+        { name: "Mathematics-I", code: "25911" },
+        { name: "Physics-I", code: "25912" },
+        { name: "Chemistry-I", code: "25914" }
+      ],
+      2: [
+        { name: "Engineering Drawing", code: "21011" },
+        { name: "General Textile Processing-II", code: "21121" },
+        { name: "Bangla-II", code: "25721" },
+        { name: "English-II", code: "25722" },
+        { name: "Mathematics-II", code: "25921" },
+        { name: "Physics-II", code: "25922" },
+        { name: "Chemistry-II", code: "25924" }
+      ],
+      3: [
+        { name: "Natural Textile Fibre", code: "21131" },
+        { name: "Yarn Manufacturing-I", code: "21132" },
+        { name: "Fabric Manufacturing-I", code: "21231" },
+        { name: "Business Communication", code: "25831" },
+        { name: "Biology-I", code: "25915" },
+        { name: "Computer Office Application", code: "28511" },
+        { name: "Basic Electricity", code: "26711" }
+      ],
+      4: [
+        { name: "Man Made Fibre & Filament", code: "21141" },
+        { name: "Yarn Manufacturing-II", code: "21142" },
+        { name: "Fabric Manufacturing-II", code: "21241" },
+        { name: "Wet Processing-I", code: "21341" },
+        { name: "Apparel Manufacturing-I", code: "21441" },
+        { name: "Basic Electronics", code: "26811" },
+        { name: "Basic Workshop Practice", code: "27011" }
+      ],
+      5: [
+        { name: "Textile Testing & Quality Control-I", code: "21151" },
+        { name: "Fabric Structure & Design", code: "21251" },
+        { name: "Wet Processing-II", code: "21351" },
+        { name: "Apparel Manufacturing-II", code: "21451" },
+        { name: "General Maintenance & Utility Service", code: "21861" },
+        { name: "Accounting & Cost Management", code: "25842" }
+      ],
+      6: [
+        { name: "Textile Testing & Quality Control-II", code: "21161" },
+        { name: "Fundamental of Merchandising", code: "21761" },
+        { name: "Product Analysis & Development", code: "21762" },
+        { name: "Application of Computer in Merchandising", code: "21763" },
+        { name: "Supply Chain Management", code: "21764" },
+        { name: "Principles of Marketing", code: "25851" },
+        { name: "Industrial Management", code: "25852" },
+        { name: "Environmental Studies", code: "29041" }
+      ],
+      7: [
+        { name: "Production Planning & Control", code: "21173" },
+        { name: "Textile Waste Recycling", code: "21174" },
+        { name: "Garments Washing & Dyeing", code: "21463" },
+        { name: "Garments Consumption & Costing", code: "21771" },
+        { name: "Advanced Business Communication", code: "21772" },
+        { name: "Advanced Marketing", code: "21773" },
+        { name: "Innovation & Entrepreneurship", code: "25853" }
+      ],
+      8: [
+        { name: "Industrial Training & Graduation Project Presentation", code: "21181" }
+      ]
+    }
+  },
+  "jute-product-manufacturing": {
+    code: 15,
+    name: "Jute Product Manufacturing",
+    regulation: "2022",
+    category: "Textile",
+    semesters: {
+      1: [
+        { name: "General Textile Processing-I", code: "21111" },
+        { name: "Bangla-I", code: "25711" },
+        { name: "English-I", code: "25712" },
+        { name: "Social Science", code: "25811" },
+        { name: "Physical Education & Life Skills Development", code: "25812" },
+        { name: "Mathematics-I", code: "25911" },
+        { name: "Physics-I", code: "25912" },
+        { name: "Chemistry-I", code: "25914" }
+      ],
+      2: [
+        { name: "Engineering Drawing", code: "21011" },
+        { name: "General Textile Processing-II", code: "21121" },
+        { name: "Bangla-II", code: "25721" },
+        { name: "English-II", code: "25722" },
+        { name: "Mathematics-II", code: "25921" },
+        { name: "Physics-II", code: "25922" },
+        { name: "Chemistry-II", code: "25924" }
+      ],
+      3: [
+        { name: "Natural Textile Fibre", code: "21131" },
+        { name: "Yarn Manufacturing-I", code: "21132" },
+        { name: "Fabric Manufacturing-I", code: "21231" },
+        { name: "Business Communication", code: "25831" },
+        { name: "Biology-I", code: "25915" },
+        { name: "Computer Office Application", code: "28511" },
+        { name: "Basic Electricity", code: "26711" }
+      ],
+      4: [
+        { name: "Man Made Fibre & Filament", code: "21141" },
+        { name: "Yarn Manufacturing-II", code: "21142" },
+        { name: "Fabric Manufacturing-II", code: "21241" },
+        { name: "Wet Processing-I", code: "21341" },
+        { name: "Apparel Manufacturing-I", code: "21441" },
+        { name: "Basic Electronics", code: "26811" },
+        { name: "Basic Workshop Practice", code: "27011" }
+      ],
+      5: [
+        { name: "Textile Testing & Quality Control-I", code: "21151" },
+        { name: "Fabric Structure & Design", code: "21251" },
+        { name: "Wet Processing-II", code: "21351" },
+        { name: "Apparel Manufacturing-II", code: "21451" },
+        { name: "General Maintenance & Utility Service", code: "21861" },
+        { name: "Accounting & Cost Management", code: "25842" }
+      ],
+      6: [
+        { name: "Advanced Jute Spinning-I", code: "21561" },
+        { name: "Textile Testing & Quality Control-II", code: "21161" },
+        { name: "Diversification of Jute Products Manufacturing", code: "21562" },
+        { name: "Jute Calculation", code: "21563" },
+        { name: "Application of Computer in Jute Manufacturing", code: "21564" },
+        { name: "Principles of Marketing", code: "25851" },
+        { name: "Environmental Studies", code: "29041" }
+      ],
+      7: [
+        { name: "Production Planning & Control", code: "21173" },
+        { name: "Textile Waste Recycling", code: "21174" },
+        { name: "Advanced Jute Spinning-II", code: "21571" },
+        { name: "Jute Weaving and Finishing", code: "21572" },
+        { name: "Jute Processing Machinery and Maintenance", code: "21874" },
+        { name: "Industrial Management", code: "25852" },
+        { name: "Innovation & Entrepreneurship", code: "25853" }
+      ],
+      8: [
+        { name: "Industrial Training & Graduation Project Presentation", code: "21581" }
+      ]
+    }
+  },
+  "textile-machine-design-maintenance": {
+    code: 18,
+    name: "Textile Machine Design & Maintenance",
+    regulation: "2022",
+    category: "Textile",
+    semesters: {
+      1: [
+        { name: "General Textile Processing-I", code: "21111" },
+        { name: "Bangla-I", code: "25711" },
+        { name: "English-I", code: "25712" },
+        { name: "Social Science", code: "25811" },
+        { name: "Physical Education & Life Skills Development", code: "25812" },
+        { name: "Mathematics-I", code: "25911" },
+        { name: "Physics-I", code: "25912" },
+        { name: "Chemistry-I", code: "25914" }
+      ],
+      2: [
+        { name: "General Textile Processing-II", code: "21121" },
+        { name: "Bangla-II", code: "25721" },
+        { name: "English-II", code: "25722" },
+        { name: "Mathematics-II", code: "25921" },
+        { name: "Physics-II", code: "25922" },
+        { name: "Engineering Drawing", code: "21011" },
+        { name: "Chemistry-II", code: "25924" }
+      ],
+      3: [
+        { name: "Computer Office Application", code: "28511" },
+        { name: "Natural Textile Fibre", code: "21131" },
+        { name: "Yarn Manufacturing-I", code: "21132" },
+        { name: "Fabric Manufacturing-I", code: "21231" },
+        { name: "Biology-I", code: "25915" },
+        { name: "Basic Electricity", code: "26711" },
+        { name: "Business Communication", code: "25831" }
+      ],
+      4: [
+        { name: "Basic Electronics", code: "26811" },
+        { name: "Man Made Fibre & Filament", code: "21141" },
+        { name: "Yarn Manufacturing-II", code: "21142" },
+        { name: "Fabric Manufacturing-II", code: "21241" },
+        { name: "Wet Processing-I", code: "21341" },
+        { name: "Apparel Manufacturing-I", code: "21441" },
+        { name: "Basic Workshop Practice", code: "27011" }
+      ],
+      5: [
+        { name: "Textile Testing & Quality Control-I", code: "21151" },
+        { name: "Fabric Structure & Design", code: "21251" },
+        { name: "Wet Processing-II", code: "21351" },
+        { name: "Apparel Manufacturing-II", code: "21451" },
+        { name: "Basic Machine Maintenance", code: "21851" },
+        { name: "Accounting & Cost Management", code: "25842" }
+      ],
+      6: [
+        { name: "Textile Testing & Quality Control-II", code: "21161" },
+        { name: "Yarn Manufacturing Machinery and Maintenance", code: "21862" },
+        { name: "Fabric Manufacturing Machinery and Maintenance", code: "21863" },
+        { name: "Utility Machinery", code: "21864" },
+        { name: "Engineering Mechanics", code: "21865" },
+        { name: "Textile Machine Metallurgy", code: "21866" },
+        { name: "Principles of Marketing", code: "25851" },
+        { name: "Environmental Studies", code: "29041" }
+      ],
+      7: [
+        { name: "Machine Control Engineering", code: "21871" },
+        { name: "Design of Machine Elements", code: "21872" },
+        { name: "Wet Process Machinery and Maintenance", code: "21873" },
+        { name: "Jute Processing Machinery and Maintenance", code: "21874" },
+        { name: "Apparel Manufacturing Machinery and Maintenance", code: "21875" },
+        { name: "Industrial Management", code: "25852" },
+        { name: "Innovation & Entrepreneurship", code: "25853" }
+      ],
+      8: [
+        { name: "Industrial Training & Graduation Project Presentation", code: "21881" }
+      ]
+    }
+  }
+};
+
+const technologyList = Object.entries(booklists).map(([slug, data]) => ({
+  slug,
+  code: data.code,
+  name: data.name,
+  regulation: data.regulation,
+  category: data.category
+}));
+
+const server = http.createServer((req, res) => {
+  const url = new URL(req.url, `http://${req.headers.host}`);
+  
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  
+  if (url.pathname === '/' || url.pathname === '/index.html') {
+    const filePath = path.join(__dirname, 'public', 'index.html');
+    fs.readFile(filePath, (err, data) => {
+      if (err) {
+        res.writeHead(500, { 'Content-Type': 'text/plain' });
+        res.end('Error loading page');
+        return;
+      }
+      res.writeHead(200, { 'Content-Type': 'text/html' });
+      res.end(data);
+    });
+  }
+  else if (url.pathname === '/api/technologies') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ technologies: technologyList }));
+  }
+  else if (url.pathname.startsWith('/api/booklist')) {
+    const tech = url.searchParams.get('technology') || url.pathname.split('/api/booklist/')[1];
+    
+    if (!tech) {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ 
+        message: "Please provide technology name",
+        available: technologyList,
+        usage: "/api/booklist?technology=computer-science-technology"
+      }));
+      return;
+    }
+    
+    const normalizedTech = tech.toLowerCase().replace(/\s+/g, '-');
+    const booklist = booklists[normalizedTech];
+    
+    if (booklist) {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(booklist));
+    } else {
+      res.writeHead(404, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ 
+        error: "Technology not found",
+        available: technologyList.map(t => t.slug)
+      }));
+    }
+  }
+  else {
+    const filePath = path.join(__dirname, 'public', url.pathname);
+    fs.readFile(filePath, (err, data) => {
+      if (err) {
+        res.writeHead(404, { 'Content-Type': 'text/plain' });
+        res.end('Not Found');
+        return;
+      }
+      const ext = path.extname(filePath);
+      const contentTypes = {
+        '.html': 'text/html',
+        '.css': 'text/css',
+        '.js': 'application/javascript',
+        '.json': 'application/json'
+      };
+      res.writeHead(200, { 'Content-Type': contentTypes[ext] || 'text/plain' });
+      res.end(data);
+    });
+  }
+});
+
+server.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server running at http://0.0.0.0:${PORT}`);
+  console.log(`Total technologies: ${technologyList.length}`);
+  console.log('API Endpoints:');
+  console.log('  GET /api/technologies - List all technologies');
+  console.log('  GET /api/booklist?technology=<name> - Get booklist for a technology');
+});

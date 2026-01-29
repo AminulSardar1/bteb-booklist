@@ -1,0 +1,13 @@
+{
+  "name": "bteb-booklist",
+  "version": "1.0.0",
+  "description": "BTEB Technology Booklists - 2022 Regulation",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": ["bteb", "booklist", "diploma", "bangladesh"],
+  "author": "",
+  "license": "MIT"
+}
