@@ -1,1 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BTEB Booklists - All Technologies</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    header {
+      text-align: center;
+      color: white;
+      margin-bottom: 30px;
+    }
+    header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+    }
+    header p {
+      opacity: 0.9;
+      font-size: 1.1rem;
+    }
+    .tech-selector {
+      background: white;
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 25px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    }
+    .tech-selector label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: #333;
+    }
+    .tech-selector select {
+      width: 100%;
+      padding: 15px;
+      font-size: 1rem;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      background: #f9f9f9;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .tech-selector select:focus {
+      outline: none;
+      border-color: #2a5298;
+      background: white;
+    }
+    .category-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 15px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid #eee;
+    }
+    .category-tab {
+      padding: 8px 16px;
+      background: #e8f0fe;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s;
+      color: #2a5298;
+    }
+    .category-tab:hover {
+      background: #d0e3ff;
+    }
+    .category-tab.active {
+      background: #2a5298;
+      color: white;
+    }
+    .tech-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 15px;
+      margin-top: 20px;
+    }
+    .tech-card {
+      background: #f5f7fa;
+      border-radius: 10px;
+      padding: 15px;
+      cursor: pointer;
+      transition: all 0.3s;
+      border: 2px solid transparent;
+    }
+    .tech-card:hover {
+      background: #e8f0fe;
+      border-color: #2a5298;
+      transform: translateY(-2px);
+    }
+    .tech-card.active {
+      background: #2a5298;
+      color: white;
+    }
+    .tech-card .code {
+      font-size: 0.85rem;
+      opacity: 0.7;
+    }
+    .tech-card .name {
+      font-weight: 600;
+      margin-top: 5px;
+    }
+    .booklist-container {
+      background: white;
+      border-radius: 15px;
+      padding: 25px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    }
+    .booklist-header {
+      text-align: center;
+      margin-bottom: 25px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid #eee;
+    }
+    .booklist-header h2 {
+      color: #1e3c72;
+      font-size: 1.8rem;
+    }
+    .booklist-header .regulation {
+      color: #666;
+      margin-top: 5px;
+    }
+    .semester-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 25px;
+    }
+    .semester-tab {
+      padding: 10px 20px;
+      background: #e8f0fe;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s;
+      color: #2a5298;
+    }
+    .semester-tab:hover {
+      background: #d0e3ff;
+    }
+    .semester-tab.active {
+      background: #2a5298;
+      color: white;
+    }
+    .subjects-list {
+      display: grid;
+      gap: 15px;
+    }
+    .subject-card {
+      background: #f8f9fa;
+      border-radius: 10px;
+      padding: 20px;
+      border-left: 4px solid #2a5298;
+      transition: all 0.3s;
+    }
+    .subject-card:hover {
+      background: #eef3f8;
+      transform: translateX(5px);
+    }
+    .subject-card .subject-name {
+      font-weight: 600;
+      color: #333;
+      font-size: 1.1rem;
+    }
+    .subject-card .subject-code {
+      color: #666;
+      font-size: 0.9rem;
+      margin-top: 5px;
+    }
+    .api-info {
+      background: #f0f4f8;
+      border-radius: 10px;
+      padding: 20px;
+      margin-top: 25px;
+    }
+    .api-info h3 {
+      color: #1e3c72;
+      margin-bottom: 15px;
+    }
+    .api-info code {
+      background: #2a5298;
+      color: white;
+      padding: 3px 8px;
+      border-radius: 5px;
+      font-size: 0.9rem;
+    }
+    .api-info ul {
+      list-style: none;
+      margin-top: 10px;
+    }
+    .api-info li {
+      padding: 8px 0;
+      border-bottom: 1px solid #ddd;
+    }
+    .loading {
+      text-align: center;
+      padding: 50px;
+      color: #666;
+    }
+    .all-semesters {
+      display: none;
+    }
+    .all-semesters.show {
+      display: block;
+    }
+    .semester-section {
+      margin-bottom: 30px;
+    }
+    .semester-section h3 {
+      background: #2a5298;
+      color: white;
+      padding: 15px 20px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+    }
+    @media (max-width: 768px) {
+      header h1 {
+        font-size: 1.8rem;
+      }
+      .tech-grid {
+        grid-template-columns: 1fr;
+      }
+      .semester-tabs {
+        gap: 5px;
+      }
+      .semester-tab {
+        padding: 8px 15px;
+        font-size: 0.9rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>BTEB Technology Booklists</h1>
+      <p>2022 Regulation Curriculum - Semester 1 to 8 | <span id="techCount">0</span> Technologies</p>
+    </header>
 
+    <div class="tech-selector">
+      <label>Select Technology:</label>
+      <select id="techSelect">
+        <option value="">-- Choose a Technology --</option>
+      </select>
+      <div class="category-tabs" id="categoryTabs">
+        <button class="category-tab active" data-category="all">All</button>
+        <button class="category-tab" data-category="Engineering">Engineering</button>
+        <button class="category-tab" data-category="Textile">Textile</button>
+        <button class="category-tab" data-category="Agriculture">Agriculture</button>
+        <button class="category-tab" data-category="Specialized">Specialized</button>
+      </div>
+      <div class="tech-grid" id="techGrid"></div>
+    </div>
+
+    <div class="booklist-container" id="booklistContainer" style="display: none;">
+      <div class="booklist-header">
+        <h2 id="techName"></h2>
+        <p class="regulation">Regulation: <span id="techRegulation"></span> | Code: <span id="techCode"></span></p>
+      </div>
+      
+      <div class="semester-tabs" id="semesterTabs"></div>
+      
+      <div id="subjectsList" class="subjects-list"></div>
+      <div id="allSemesters" class="all-semesters"></div>
+    </div>
+
+    <div class="api-info">
+      <h3>API Endpoints</h3>
+      <ul>
+        <li><code>GET /api/technologies</code> - List all available technologies</li>
+        <li><code>GET /api/booklist?technology=computer-science-technology</code> - Get booklist for a specific technology</li>
+      </ul>
+      <p style="margin-top: 15px; color: #666;">Available technologies: computer-science-technology, electrical-technology, civil-technology, mechanical-technology, electronics-technology, power-technology, rac-technology, automobile-technology</p>
+    </div>
+  </div>
+
+  <script>
+    let currentData = null;
+    let currentSemester = 1;
+    let allTechnologies = [];
+    let currentCategory = 'all';
+
+    async function loadTechnologies() {
+      try {
+        const response = await fetch('/api/technologies');
+        const data = await response.json();
+        allTechnologies = data.technologies;
+        
+        document.getElementById('techCount').textContent = allTechnologies.length;
+        
+        const select = document.getElementById('techSelect');
+        allTechnologies.forEach(tech => {
+          const option = document.createElement('option');
+          option.value = tech.slug;
+          option.textContent = `${tech.name} (${tech.code})`;
+          select.appendChild(option);
+        });
+        
+        select.onchange = (e) => {
+          if (e.target.value) {
+            loadBooklist(e.target.value);
+          }
+        };
+        
+        document.querySelectorAll('.category-tab').forEach(tab => {
+          tab.onclick = () => {
+            document.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            currentCategory = tab.dataset.category;
+            renderTechGrid();
+          };
+        });
+        
+        renderTechGrid();
+      } catch (error) {
+        console.error('Error loading technologies:', error);
+      }
+    }
+    
+    function renderTechGrid() {
+      const grid = document.getElementById('techGrid');
+      grid.innerHTML = '';
+      
+      const filtered = currentCategory === 'all' 
+        ? allTechnologies 
+        : allTechnologies.filter(t => t.category === currentCategory);
+      
+      filtered.forEach(tech => {
+        const card = document.createElement('div');
+        card.className = 'tech-card';
+        card.dataset.slug = tech.slug;
+        card.innerHTML = `
+          <div class="code">Code: ${tech.code} | ${tech.category || 'Engineering'}</div>
+          <div class="name">${tech.name}</div>
+        `;
+        card.onclick = () => loadBooklist(tech.slug);
+        grid.appendChild(card);
+      });
+    }
+
+    async function loadBooklist(slug) {
+      try {
+        document.querySelectorAll('.tech-card').forEach(card => {
+          card.classList.remove('active');
+          if (card.dataset.slug === slug) {
+            card.classList.add('active');
+          }
+        });
+        
+        document.getElementById('techSelect').value = slug;
+        
+        const response = await fetch(`/api/booklist?technology=${slug}`);
+        currentData = await response.json();
+        
+        document.getElementById('techName').textContent = currentData.name;
+        document.getElementById('techRegulation').textContent = currentData.regulation;
+        document.getElementById('techCode').textContent = currentData.code;
+        
+        const tabs = document.getElementById('semesterTabs');
+        tabs.innerHTML = '<button class="semester-tab active" data-semester="all">All Semesters</button>';
+        
+        Object.keys(currentData.semesters).forEach(sem => {
+          const btn = document.createElement('button');
+          btn.className = 'semester-tab';
+          btn.dataset.semester = sem;
+          btn.textContent = `Semester ${sem}`;
+          btn.onclick = () => showSemester(parseInt(sem));
+          tabs.appendChild(btn);
+        });
+        
+        tabs.querySelector('[data-semester="all"]').onclick = () => showAllSemesters();
+        
+        showAllSemesters();
+        document.getElementById('booklistContainer').style.display = 'block';
+        document.getElementById('booklistContainer').scrollIntoView({ behavior: 'smooth' });
+      } catch (error) {
+        console.error('Error loading booklist:', error);
+      }
+    }
+
+    function showSemester(semester) {
+      document.querySelectorAll('.semester-tab').forEach(tab => {
+        tab.classList.remove('active');
+        if (parseInt(tab.dataset.semester) === semester) {
+          tab.classList.add('active');
+        }
+      });
+      
+      const subjects = currentData.semesters[semester];
+      const list = document.getElementById('subjectsList');
+      document.getElementById('allSemesters').classList.remove('show');
+      list.style.display = 'grid';
+      
+      list.innerHTML = subjects.map(subject => `
+        <div class="subject-card">
+          <div class="subject-name">${subject.name}</div>
+          <div class="subject-code">Subject Code: ${subject.code}</div>
+        </div>
+      `).join('');
+    }
+
+    function showAllSemesters() {
+      document.querySelectorAll('.semester-tab').forEach(tab => {
+        tab.classList.remove('active');
+        if (tab.dataset.semester === 'all') {
+          tab.classList.add('active');
+        }
+      });
+      
+      document.getElementById('subjectsList').style.display = 'none';
+      const allContainer = document.getElementById('allSemesters');
+      allContainer.classList.add('show');
+      
+      let html = '';
+      Object.entries(currentData.semesters).forEach(([sem, subjects]) => {
+        html += `
+          <div class="semester-section">
+            <h3>Semester ${sem}</h3>
+            <div class="subjects-list">
+              ${subjects.map(subject => `
+                <div class="subject-card">
+                  <div class="subject-name">${subject.name}</div>
+                  <div class="subject-code">Subject Code: ${subject.code}</div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      });
+      
+      allContainer.innerHTML = html;
+    }
+
+    loadTechnologies();
+  </script>
+</body>
+</html>
